@@ -1,0 +1,68 @@
+<nav
+   class="flex fixed items-center flex-row justify-center shadow-sm shadow-primary z-5 transition-all duration-1000"
+   [ngClass]="{
+      'opacity-0 z-[-5]': isScrolling,
+      'opacity-100 z-5': !isScrolling,
+   }"
+>
+   <div
+      class="bg-primary w-screen p-5 flex-row justify-center items-center flex"
+   >
+      <div class="container flex flex-row">
+         <a href="/">
+            <img
+               class="sm:w-40 w-30"
+               ngSrc="{{ logo }}"
+               alt="{{ logoAlt }}"
+               width="153"
+               height="47"
+               priority
+            />
+         </a>
+         <div
+            class="flex-row items-center justify-end w-full md:gap-16 gap-12 hidden sm:flex"
+         >
+            @for (link of navPaths; track link.path) {
+               <a
+                  class="pointer"
+                  [routerLink]="link.path"
+                  routerLinkActive="active-link"
+                  [routerLinkActiveOptions]="{ exact: link.path === '/' }"
+               >
+                  <p
+                     class="text-white transform transition-transform duration-200 ease-in-out hover:scale-110"
+                  >
+                     {{ link.label }}
+                  </p>
+               </a>
+            }
+            <a class="pointer" href="/cart">
+               <img
+                  class="w-8"
+                  ngSrc="{{ cart }}"
+                  alt="{{ cartAlt }}"
+                  width="30"
+                  height="30"
+                  priority
+               />
+            </a>
+            <a class="pointer" href="/profile">
+               <img
+                  class="w-8"
+                  ngSrc="{{ profile }}"
+                  alt="{{ profileAlt }}"
+                  width="30"
+                  height="30"
+                  priority
+               />
+            </a>
+         </div>
+      </div>
+   </div>
+   <app-hide-menu [isOpen]="isOpen" (close)="toggleMenu()"></app-hide-menu>
+
+   <app-burger-button
+      (toggleChange)="toggleMenu()"
+      [isOpen]="isOpen"
+   ></app-burger-button>
+</nav>
