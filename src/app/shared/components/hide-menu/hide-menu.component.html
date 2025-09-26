@@ -1,0 +1,60 @@
+@if (isOpen) {
+   <div
+      class="fixed inset-0 z-30 bg-black opacity-30 sm:hidden"
+      (click)="onClick()"
+   ></div>
+}
+
+<div
+   class="bg-primary flex flex-row items-start justify-between w-screen sm:hidden px-4 pt-4 transition-all duration-500 shadow-lg fixed top-0 left-0 z-40"
+   [ngClass]="{
+      '-translate-x-0': isOpen,
+      'translate-x-full': !isOpen,
+   }"
+>
+   <div class="flex flex-col items-start justify-between">
+      <img
+         class="w-35 h-12 pl-5 mb-10"
+         ngSrc="{{ logo }}"
+         alt="{{ logoAlt }}"
+         width="153"
+         height="47"
+         priority
+      />
+
+      @for (link of navPaths; track link.path) {
+         <a
+            class="pointer ml-5 mb-10"
+            [routerLink]="link.path"
+            routerLinkActive="active-link"
+            [routerLinkActiveOptions]="{ exact: link.path === '/' }"
+         >
+            <p
+               class="text-white transform transition-transform duration-200 ease-in-out hover:scale-110"
+            >
+               {{ link.label }}
+            </p>
+         </a>
+      }
+      <a class="pointer pl-5 pb-10" href="/cart">
+         <img
+            class="w-8"
+            ngSrc="{{ cart }}"
+            alt="{{ cartAlt }}"
+            width="30"
+            height="30"
+            priority
+         />
+      </a>
+      <a class="pointer pl-5 pb-10" href="/profile">
+         <img
+            class="w-8"
+            ngSrc="{{ profile }}"
+            alt="{{ profileAlt }}"
+            width="30"
+            height="30"
+            priority
+         />
+      </a>
+   </div>
+</div>
