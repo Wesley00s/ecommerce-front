@@ -1,0 +1,15 @@
+export enum ProductCategory {
+   SMARTPHONE = 'smartphone',
+   PC = 'pc',
+   TABLETS = 'tablets',
+   TV = 'tv',
+   HOME_APPLIANCES = 'home-appliances',
+   SMARTWATCH = 'smartwatch',
+   GAMING_CONSOLE = 'gaming-console',
+   ACCESSORY = 'accessory',
+   HEADSET = 'headset',
+   CAMERA = 'camera',
+   DRONES = 'drones',
+   MONITOR = 'monitor',
+   PRINTER = 'printer',
+}
