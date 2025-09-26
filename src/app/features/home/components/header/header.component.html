@@ -1,0 +1,28 @@
+<header
+   class="flex flex-col bg-primary items-center justify-center w-screen h-full"
+>
+   <div class="container flex flex-col items-center md:items-start px-4 py-15">
+      <h1
+         class="text-body-lg text-center md:text-left md:text-head-md font-bold pt-12"
+      >
+         Shopping de Eletrônicos
+      </h1>
+      <h2 class="text-body text-center md:text-left md:text-body-md pt-5 pb-10">
+         Aqui você encontra tudo o que você procura de mais tecnológico
+      </h2>
+      <app-button
+         [label]="'Ver produtos'"
+         [type]="'button'"
+         [disabled]="false"
+         (clicked)="onButtonClick()"
+      ></app-button>
+   </div>
+   <img
+      class="w-65 absolute top-[90px] right-[15%] lg:block hidden"
+      ngSrc="{{ phone }}"
+      alt="{{ phoneAlt }}"
+      width="500"
+      height="500"
+      priority
+   />
+</header>
