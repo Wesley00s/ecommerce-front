@@ -1,0 +1,33 @@
+<div class="flex">
+   @for (starType of starsArray(); track $index) {
+      @switch (starType) {
+         @case ("full") {
+            <img
+               class="w-3 md:w-4"
+               ngSrc="assets/icons/full-star.svg"
+               alt="★"
+               width="4"
+               height="4"
+            />
+         }
+         @case ("half") {
+            <img
+               class="w-3 md:w-4"
+               ngSrc="assets/icons/half-star.svg"
+               alt="½"
+               width="4"
+               height="4"
+            />
+         }
+         @case ("empty") {
+            <img
+               class="w-3 md:w-4"
+               ngSrc="assets/icons/empty-star.svg"
+               alt="☆"
+               width="4"
+               height="4"
+            />
+         }
+      }
+   }
+</div>
