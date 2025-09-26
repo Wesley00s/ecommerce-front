@@ -1,0 +1,52 @@
+<div
+   class="w-40 md:w-64 h-86 shadow-lg border border-gray-100 md:rounded-3xl overflow-hidden hover:bg-gray-50 hover:shadow-md transition-all duration-200 cursor-pointer flex flex-col"
+>
+   <a
+      [routerLink]="['/products/details', productId]"
+      class="flex flex-col h-full"
+   >
+      <div
+         class="bg-white border-b border-gray-100 h-40 flex items-center justify-center"
+      >
+         <img
+            class="h-full w-full object-contain"
+            ngSrc="{{ productImage | toRelativePath }}"
+            alt="Product Image"
+            width="500"
+            height="500"
+            loading="lazy"
+         />
+      </div>
+
+      <div class="p-4 flex-grow flex flex-col">
+         <div class="mb-2">
+            <h3
+               class="font-bold text-gray-900 text-body md:text-lg line-clamp-2"
+            >
+               {{ productTitle }}
+            </h3>
+            <p class="text-gray-500 text-sm mt-1 line-clamp-2">
+               {{ productDescription }}
+            </p>
+         </div>
+
+         <div class="mt-auto">
+            <p class="text-gray-900 font-bold text-body md:text-xl">
+               R${{ productPrice.toFixed(2) }}
+            </p>
+         </div>
+
+         <div class="flex items-center mt-2">
+            <app-stars [productRating]="productRating"></app-stars>
+
+            <div class="ml-2 flex text-sm">
+               <span class="font-medium text-gray-700">{{
+                     productRating.toFixed(1)
+                  }}</span>
+               <span class="mx-1 text-gray-300">|</span>
+               <span class="text-gray-500">{{ totalSold }}</span>
+            </div>
+         </div>
+      </div>
+   </a>
+</div>
