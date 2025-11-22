@@ -1,7 +1,5 @@
-import { ProductCategory } from '../../enum/ProductCategory';
-
 export interface Product {
-   id: number;
+   id?: number;
    name: string;
    coverImageUrl: string;
    coverImagePublicId: string;
@@ -10,8 +8,9 @@ export interface Product {
    description: string;
    stock: number;
    price: number;
-   category: ProductCategory;
+   categoryName: string;
    rating: number;
+   totalReviews: number;
    isAvailable: boolean;
    soldCount: number;
    createdAt: string;
