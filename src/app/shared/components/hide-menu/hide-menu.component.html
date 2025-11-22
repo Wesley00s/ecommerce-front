@@ -1,60 +1,108 @@
 @if (isOpen) {
-   <div
+   <button
+      type="button"
       class="fixed inset-0 z-30 bg-black opacity-30 sm:hidden"
-      (click)="onClick()"
-   ></div>
+      (click)="closeMenu()"
+      aria-label="Close menu"
+   ></button>
 }
 
 <div
-   class="bg-primary flex flex-row items-start justify-between w-screen sm:hidden px-4 pt-4 transition-all duration-500 shadow-lg fixed top-0 left-0 z-40"
+   class="bg-primary flex flex-row items-start justify-between w-screen sm:hidden px-4 pt-4 transition-all duration-500 shadow-lg fixed top-0 left-0 z-40 h-screen overflow-y-auto"
    [ngClass]="{
       '-translate-x-0': isOpen,
       'translate-x-full': !isOpen,
    }"
 >
-   <div class="flex flex-col items-start justify-between">
-      <img
-         class="w-35 h-12 pl-5 mb-10"
-         ngSrc="{{ logo }}"
-         alt="{{ logoAlt }}"
-         width="153"
-         height="47"
-         priority
-      />
+   <div class="flex flex-col items-start justify-start w-full">
+      <a routerLink="/" (click)="closeMenu()" class="mb-10 pl-5">
+         <img
+            class="w-35 h-12"
+            ngSrc="{{ logo }}"
+            alt="{{ logoAlt }}"
+            width="153"
+            height="47"
+            priority
+         />
+      </a>
 
       @for (link of navPaths; track link.path) {
          <a
-            class="pointer ml-5 mb-10"
+            class="pointer ml-5 mb-8 block"
             [routerLink]="link.path"
             routerLinkActive="active-link"
             [routerLinkActiveOptions]="{ exact: link.path === '/' }"
+            (click)="closeMenu()"
          >
             <p
-               class="text-white transform transition-transform duration-200 ease-in-out hover:scale-110"
+               class="text-white text-lg transform transition-transform duration-200 ease-in-out hover:scale-110"
             >
                {{ link.label }}
             </p>
          </a>
       }
-      <a class="pointer pl-5 pb-10" href="/cart">
+
+      @if (isAdmin) {
+         <a
+            class="pointer ml-5 mb-8 block"
+            [routerLink]="'/admin'"
+            routerLinkActive="active-link"
+            (click)="closeMenu()"
+         >
+            <p
+               class="text-white text-lg font-bold transform transition-transform duration-200 ease-in-out hover:scale-110"
+            >
+               Gerenciamento
+            </p>
+         </a>
+      }
+
+      <div
+         class="w-full border-t border-white/20 my-4 ml-5 mr-5 w-[calc(100%-2.5rem)]"
+      ></div>
+
+      <a
+         class="pointer ml-5 mb-8 flex items-center gap-4"
+         [routerLink]="'/cart'"
+         (click)="closeMenu()"
+      >
          <img
             class="w-8"
             ngSrc="{{ cart }}"
             alt="{{ cartAlt }}"
             width="30"
             height="30"
-            priority
          />
+         <span class="text-white text-lg">Carrinho</span>
       </a>
-      <a class="pointer pl-5 pb-10" href="/profile">
-         <img
-            class="w-8"
-            ngSrc="{{ profile }}"
-            alt="{{ profileAlt }}"
-            width="30"
-            height="30"
-            priority
-         />
+
+      <a
+         class="pointer ml-5 pb-10 flex items-center gap-4"
+         [routerLink]="profileLink"
+         [title]="profileTitle"
+         (click)="closeMenu()"
+      >
+         @if (isLogged()) {
+            <div
+               class="w-8 h-8 rounded-full bg-orange-base text-white flex items-center justify-center text-xs font-bold border border-white shadow-sm"
+            >
+               {{ userInitials() }}
+            </div>
+         } @else {
+            <img
+               class="w-8"
+               ngSrc="{{ profile }}"
+               alt="{{ profileAlt }}"
+               width="30"
+               height="30"
+            />
+         }
+
+         <span class="text-white text-lg">
+            {{
+               isAdmin ? "Perfil Admin" : isLogged() ? "Meu Perfil" : "Entrar"
+            }}
+         </span>
       </a>
    </div>
 </div>
