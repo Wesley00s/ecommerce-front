@@ -10,5 +10,8 @@
       !disabled ? hover : '',
    ]"
 >
-   {{ label }} @if(icon) { <img class="h-6" [ngSrc]="icon" alt="Cart" height="37" width="37"> }
+   {{ label }}
+   @if (icon) {
+      <img class="h-6" [ngSrc]="icon" alt="Cart" height="37" width="37" />
+   }
 </button>
