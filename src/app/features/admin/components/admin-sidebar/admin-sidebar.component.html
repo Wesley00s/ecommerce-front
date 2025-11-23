@@ -1,0 +1,46 @@
+<div
+   class="bg-white w-full md:w-64 h-auto md:h-full flex flex-row md:flex-col border-b md:border-b-0 md:border-r border-gray-200 overflow-x-auto md:overflow-visible no-scrollbar"
+>
+   <div
+      class="hidden md:flex h-16 shrink-0 items-center px-6 border-b border-gray-200"
+   >
+      <span class="text-lg font-bold text-orange-base">Ecommerce Admin</span>
+   </div>
+
+   <nav class="flex-1 md:py-4">
+      <ul
+         class="flex flex-row md:flex-col items-center md:items-stretch md:space-y-1 px-2 h-full md:h-auto"
+      >
+         <li>
+            <a
+               routerLink="/admin/categories"
+               routerLinkActive="bg-orange-50 text-orange-600"
+               class="flex items-center gap-3 px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors whitespace-nowrap"
+            >
+               <span class="font-medium text-sm md:text-base">Categorias</span>
+            </a>
+         </li>
+
+         <li>
+            <a
+               routerLink="/admin/products"
+               routerLinkActive="bg-orange-50 text-orange-600"
+               class="flex items-center gap-3 px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors whitespace-nowrap"
+            >
+               <span class="font-medium text-sm md:text-base">Produtos</span>
+            </a>
+         </li>
+
+         <li class="md:mt-4 md:pt-4 md:border-t border-gray-100">
+            <a
+               routerLink="/"
+               class="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-red-600 transition-colors whitespace-nowrap"
+            >
+               <span class="font-medium text-sm md:text-base"
+                  >Voltar para Loja</span
+               >
+            </a>
+         </li>
+      </ul>
+   </nav>
+</div>
