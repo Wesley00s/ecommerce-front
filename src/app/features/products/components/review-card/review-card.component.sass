@@ -1,0 +1,23 @@
+.review-text
+   display: -webkit-box
+   -webkit-box-orient: vertical
+   overflow: hidden
+   text-overflow: ellipsis
+   -webkit-line-clamp: 2
+   max-height: 3rem
+   transition: max-height 0.4s ease-in-out
+
+   &.expanded
+      max-height: 50rem
+      -webkit-line-clamp: unset
+
+.toolbox-animate
+   animation: fadeInScale 0.15s ease-out
+
+@keyframes fadeInScale
+   from
+      opacity: 0
+      transform: scale(0.95)
+   to
+      opacity: 1
+      transform: scale(1)

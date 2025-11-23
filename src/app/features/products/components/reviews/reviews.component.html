@@ -1,0 +1,161 @@
+<div class="mt-10 w-full flex flex-col px-6 items-center">
+   <div class="py-6 mb-6 border-b border-gray-200 w-full text-center">
+      <h2 class="text-body-md text-gray-500">Avaliações de Clientes</h2>
+   </div>
+   <app-create-review-button
+      (addReviewClick)="openReviewModal()"
+   ></app-create-review-button>
+</div>
+@if (reviewsState$ | async; as state) {
+   @if (state.loading) {
+      <app-loading-container
+         [message]="'Carregando avaliações...'"
+      ></app-loading-container>
+   }
+   @if (state.error) {
+      <app-error-container
+         [errorMessage]="'Erro ao carregar avaliações.'"
+      ></app-error-container>
+   } @else {
+      @if (state.reviews.data.length > 0 && state.reviews.data; as reviews) {
+         <div class="w-full flex flex-col">
+            <div
+               class="flex flex-col md:flex-row w-full justify-between items-center px-6 pt-5 gap-4"
+            >
+               <h3 class="text-lg text-slate-500">
+                  {{ state.reviews.pagination.totalElements }}
+                  {{
+                     state.reviews.pagination.totalElements === 1
+                        ? "Avaliação"
+                        : "Avaliações"
+                  }}
+               </h3>
+
+               <div class="flex items-center gap-2">
+                  <label
+                     for="sort-reviews"
+                     class="text-body font-semibold text-gray-700"
+                     >Ordenar por:</label
+                  >
+                  <select
+                     id="sort-reviews"
+                     (change)="onSortChange($event)"
+                     class="border border-gray-300 rounded-md p-2 text-body focus:ring-2 focus:ring-orange-base focus:border-orange-base transition"
+                  >
+                     @for (option of sortOptions; track option.value) {
+                        <option [value]="option.value">
+                           {{ option.label }}
+                        </option>
+                     }
+                  </select>
+               </div>
+            </div>
+            <div class="flex-1 overflow-y-auto p-6 space-y-4">
+               @for (review of reviews; track review.reviewId) {
+                  <app-review-card
+                     [review]="review"
+                     (like)="handleLike($event)"
+                     (dislike)="handleDislike($event)"
+                     [commentState]="commentsMap.get(review.reviewId)"
+                     (loadComments)="loadComments($event)"
+                     (showLessComments)="handleShowLessComments($event)"
+                     (toggleComments)="handleToggleComments($event)"
+                     (submitReply)="handleSubmittedReply($event)"
+                     (delete)="handleDeleteRequest($event)"
+                     (commentDelete)="handleCommentDeleteRequest($event)"
+                     (commentLike)="handleCommentLike($event)"
+                     (commentDislike)="handleCommentDislike($event)"
+                  ></app-review-card>
+               }
+            </div>
+
+            @if (state.reviews.pagination.totalPages > 1) {
+               <div class="flex justify-center items-center gap-2 py-6">
+                  <button
+                     (click)="onPageChange(state.reviews.pagination.page - 1)"
+                     [disabled]="state.reviews.pagination.page === 0"
+                     class="px-4 py-2 rounded-md text-sm font-medium text-gray-700 bg-white border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition"
+                  >
+                     Anterior
+                  </button>
+
+                  @for (
+                     page of getPageNumbers(
+                        state.reviews.pagination.page,
+                        state.reviews.pagination.totalPages
+                     );
+                     track page
+                  ) {
+                     <button
+                        (click)="onPageChange(page)"
+                        [class.bg-orange-base]="
+                           page === state.reviews.pagination.page
+                        "
+                        [class.text-white]="
+                           page === state.reviews.pagination.page
+                        "
+                        [class.bg-white]="
+                           page !== state.reviews.pagination.page
+                        "
+                        [class.text-gray-700]="
+                           page !== state.reviews.pagination.page
+                        "
+                        class="w-10 h-10 rounded-md border border-gray-300 text-sm font-medium hover:bg-gray-50 transition"
+                     >
+                        {{ page + 1 }}
+                     </button>
+                  }
+
+                  <button
+                     (click)="onPageChange(state.reviews.pagination.page + 1)"
+                     [disabled]="
+                        state.reviews.pagination.page >=
+                        state.reviews.pagination.totalPages - 1
+                     "
+                     class="px-4 py-2 rounded-md text-sm font-medium text-gray-700 bg-white border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition"
+                  >
+                     Próxima
+                  </button>
+               </div>
+            }
+         </div>
+      } @else {
+         <div class="text-center py-10 px-6">
+            <img
+               ngSrc="assets/icons/star-outline.svg"
+               alt="Nenhuma avaliação"
+               width="64"
+               height="64"
+               class="mx-auto mb-4 opacity-50"
+            />
+            <h3 class="text-xl font-semibold text-gray-700">
+               Seja o primeiro a avaliar!
+            </h3>
+            <p class="text-gray-500 mt-2 mb-6">
+               Sua opinião é muito importante e ajuda outros compradores.
+            </p>
+         </div>
+      }
+   }
+}
+
+@if (isModalOpen) {
+   <app-create-review-modal
+      (modalClose)="closeReviewModal()"
+      (submitReview)="handleSubmitReview($event)"
+   ></app-create-review-modal>
+}
+
+@if (isDeleteModalOpen) {
+   <app-alert-modal
+      [title]="'Confirmar Exclusão'"
+      [message]="
+         itemToDelete?.type === 'comment'
+            ? 'Você tem certeza que deseja excluir este comentário? Esta ação não pode ser desfeita.'
+            : 'Você tem certeza que deseja excluir esta avaliação? Esta ação não pode ser desfeita.'
+      "
+      [confirmButtonText]="'Excluir'"
+      (alertClose)="closeDeleteModal()"
+      (confirm)="confirmDelete()"
+   ></app-alert-modal>
+}

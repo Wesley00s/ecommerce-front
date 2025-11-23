@@ -1,0 +1,279 @@
+<div
+   class="w-full mx-auto bg-slate-50 rounded-lg border border-slate-200 py-3 px-4 my-1"
+>
+   <div class="flex items-start gap-4">
+      <img
+         ngSrc="assets/icons/avatar.svg"
+         alt="Avatar"
+         width="48"
+         height="48"
+         class="rounded-full"
+      />
+      <div class="flex-1">
+         <div class="flex items-start justify-between">
+            <div class="flex flex-col">
+               <div class="flex items-center gap-2">
+                  <h3 class="font-semibold text-slate-900">
+                     {{ review.customerName }}
+                  </h3>
+                  <span class="text-xs text-slate-400 pt-0.5">•</span>
+                  <p class="text-xs text-slate-500 pt-0.5">
+                     {{ review.createdAt | date: "dd/MM/yy, HH:mm" }}
+                  </p>
+               </div>
+               <div class="flex items-center gap-2">
+                  <app-stars [productRating]="review.rating"></app-stars>
+                  <span class="font-semibold text-slate-700">{{
+                     review.rating.toFixed(1)
+                  }}</span>
+               </div>
+            </div>
+
+            @if (isOwner) {
+               <div class="relative">
+                  <button
+                     (click)="toggleToolbox()"
+                     class="p-1 rounded-full text-slate-500 hover:bg-slate-200"
+                     aria-label="Opções da avaliação"
+                     title="Opções"
+                  >
+                     <img
+                        ngSrc="assets/icons/dots-vertical.svg"
+                        alt="Opções"
+                        width="20"
+                        height="20"
+                     />
+                  </button>
+
+                  @if (isToolboxOpen) {
+                     <div
+                        (click)="$event.stopPropagation()"
+                        (keydown)="$event.stopPropagation()"
+                        tabindex="0"
+                        class="absolute top-full right-0 mt-1 w-36 bg-white border border-slate-200 rounded-md shadow-lg z-10 toolbox-animate"
+                     >
+                        <ul class="py-1">
+                           <li>
+                              <button
+                                 (click)="onEdit()"
+                                 class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 flex items-center gap-2"
+                              >
+                                 <img
+                                    ngSrc="assets/icons/edit.svg"
+                                    alt="Editar"
+                                    width="16"
+                                    height="16"
+                                 />
+                                 <span>Editar</span>
+                              </button>
+                           </li>
+                           <li>
+                              <button
+                                 (click)="onDelete()"
+                                 class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                              >
+                                 <img
+                                    ngSrc="assets/icons/delete.svg"
+                                    alt="Deletar"
+                                    width="16"
+                                    height="16"
+                                 />
+                                 <span>Deletar</span>
+                              </button>
+                           </li>
+                        </ul>
+                     </div>
+                  }
+               </div>
+            }
+         </div>
+
+         <p
+            class="text-slate-800 leading-relaxed mt-2 review-text"
+            [class.expanded]="isExpanded"
+            appOverflowDetector
+            (isOverflowing)="onOverflowChange($event)"
+         >
+            {{ review.content }}
+         </p>
+
+         @if (contentIsOverflowing) {
+            <button
+               (click)="toggleExpand()"
+               class="flex items-center gap-1 mt-1 text-sm text-blue-600 hover:underline focus:outline-none"
+            >
+               @if (isExpanded) {
+                  <span>Ver menos</span>
+               } @else {
+                  <span>Ver mais</span>
+               }
+               <img
+                  ngSrc="assets/icons/chevron-down.svg"
+                  alt="Expandir"
+                  width="16"
+                  height="16"
+                  class="transition-transform duration-300"
+                  [class.rotate-180]="isExpanded"
+               />
+            </button>
+         }
+      </div>
+   </div>
+
+   <div
+      class="flex items-center gap-2 text-slate-600 mt-4 ml-10 [&>*]:cursor-pointer"
+   >
+      <button
+         (click)="onLike()"
+         [class.text-blue-600]="review.likedByMe"
+         [class.font-bold]="review.likedByMe"
+         class="flex items-center gap-1.5 px-3 py-1 rounded-full hover:bg-slate-200 transition-colors"
+         title="Gostei"
+      >
+         @if (review.likedByMe) {
+            <img
+               ngSrc="/assets/icons/like-full.svg"
+               alt="Gostei"
+               width="18"
+               height="18"
+            />
+         } @else {
+            <img
+               ngSrc="/assets/icons/like.svg"
+               alt="Gostei"
+               width="18"
+               height="18"
+            />
+         }
+
+         <span class="text-sm font-medium">{{ review.likes }}</span>
+      </button>
+
+      <button
+         (click)="onDislike()"
+         [class.text-red-600]="review.dislikedByMe"
+         [class.font-bold]="review.dislikedByMe"
+         class="flex items-center gap-1.5 px-3 py-1 rounded-full hover:bg-slate-200 transition-colors"
+         title="Não Gostei"
+      >
+         @if (review.dislikedByMe) {
+            <img
+               ngSrc="/assets/icons/dislike-full.svg"
+               alt="Não Gostei"
+               width="18"
+               height="18"
+            />
+         } @else {
+            <img
+               ngSrc="/assets/icons/dislike.svg"
+               alt="Não Gostei"
+               width="18"
+               height="18"
+            />
+         }
+
+         <span class="text-sm font-medium">{{ review.dislikes }}</span>
+      </button>
+
+      <button
+         (click)="onToggleComments()"
+         [disabled]="review.totalComments < 1"
+         class="flex items-center gap-1.5 px-3 py-1 rounded-full hover:bg-slate-200 transition-colors"
+         title="Comentários"
+      >
+         <img
+            ngSrc="/assets/icons/comment.svg"
+            alt="Comentários"
+            width="18"
+            height="18"
+         />
+         <span class="text-sm font-medium">{{ review.totalComments }}</span>
+      </button>
+
+      <button
+         (click)="onReply()"
+         class="flex items-center gap-1.5 px-3 py-1 rounded-full hover:bg-slate-200 transition-colors"
+         title="Responder"
+      >
+         <img
+            ngSrc="/assets/icons/reply.svg"
+            alt="Responder"
+            width="18"
+            height="18"
+         />
+      </button>
+   </div>
+
+   @if (isReplying) {
+      <app-reply-form
+         (submitReply)="handleReplySubmission($event)"
+         (cancelReply)="handleCancelReply()"
+      ></app-reply-form>
+   }
+   <div
+      class="w-full mx-auto bg-slate-50"
+      [class.py-3]="isCommentsExpanded"
+      [class.px-4]="isCommentsExpanded"
+   >
+      @if (isCommentsExpanded && commentState) {
+         <div class="space-y-4 ml-10 pt-4 border-t border-slate-200">
+            @for (comment of commentState.comments; track comment.commentId) {
+               <app-comment-card
+                  [comment]="comment"
+                  (like)="onCommentLike($event)"
+                  (dislike)="onCommentDislike($event)"
+                  (reply)="onCommentReply($event)"
+                  (delete)="onCommentDelete($event)"
+               ></app-comment-card>
+
+               @if (replyingToCommentId === comment.commentId) {
+                  <div class="pl-12 pt-2">
+                     <app-reply-form
+                        [mentionUser]="mentioningUserName"
+                        (submitReply)="handleCommentReplySubmission($event)"
+                        (cancelReply)="replyingToCommentId = null"
+                     ></app-reply-form>
+                  </div>
+               }
+            }
+
+            <div class="w-full flex justify-center items-center gap-6 pt-2">
+               @if (commentState.hasMore && !commentState.loading) {
+                  <button
+                     (click)="onLoadMoreComments()"
+                     class="flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors"
+                  >
+                     <img
+                        ngSrc="assets/icons/plus.svg"
+                        alt="Ver mais"
+                        width="16"
+                        height="16"
+                     />
+                     <span>Ver mais comentários</span>
+                  </button>
+               }
+
+               @if (
+                  commentState.comments.length > INITIAL_COMMENT_LIMIT &&
+                  !commentState.loading
+               ) {
+                  <button
+                     (click)="onShowLessComments()"
+                     class="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-800 transition-colors"
+                  >
+                     <img
+                        ngSrc="assets/icons/minus.svg"
+                        alt="Ver menos"
+                        width="16"
+                        height="16"
+                     />
+                     <span>Ver menos</span>
+                  </button>
+               }
+            </div>
+         </div>
+      } @else if (isCommentsExpanded && !commentState) {
+         <p class="text-sm text-slate-500">Carregando comentários...</p>
+      }
+   </div>
+</div>
