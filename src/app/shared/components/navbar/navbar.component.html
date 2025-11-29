@@ -1,17 +1,13 @@
 <nav
-   class="flex fixed items-center flex-row justify-center shadow-sm shadow-primary z-5 transition-all duration-1000"
-   [ngClass]="{
-      'opacity-0 z-[-5]': isScrolling,
-      'opacity-100 z-5': !isScrolling,
-   }"
+   class="fixed top-0 left-0 w-full z-50 transition-all duration-300 shadow-sm shadow-primary"
 >
-   <div
-      class="bg-primary w-screen p-5 flex-row justify-center items-center flex"
-   >
-      <div class="container flex flex-row justify-between items-center">
-         <a routerLink="/" tabindex="0">
+   <div class="bg-primary w-full px-4 h-16 md:h-20 flex items-center">
+      <div
+         class="container mx-auto flex flex-row justify-between items-center w-full"
+      >
+         <a routerLink="/" tabindex="0" class="shrink-0 flex items-center z-20">
             <img
-               class="sm:w-40 w-30"
+               class="w-28 md:w-40 object-contain"
                ngSrc="{{ logo }}"
                alt="{{ logoAlt }}"
                width="153"
@@ -21,83 +17,237 @@
             />
          </a>
 
-         <div
-            class="flex-row items-center justify-end md:gap-16 gap-12 hidden sm:flex"
-         >
-            @for (link of navPaths; track link.path) {
-               <a
-                  class="pointer"
-                  [routerLink]="link.path"
-                  routerLinkActive="active-link"
-                  [routerLinkActiveOptions]="{ exact: link.path === '/' }"
-                  title="Navegar para {{ link.label }}"
-                  tabindex="0"
+         <div class="hidden md:flex flex-1 max-w-xl mx-8 relative">
+            <input
+               [formControl]="searchControl"
+               (keydown.enter)="onSearch()"
+               type="text"
+               class="w-full h-10 pl-4 pr-20 rounded-full border-none bg-gray-100 text-gray-700 focus:ring-2 focus:ring-orange-base placeholder-gray-400 transition-all outline-none shadow-inner"
+               placeholder="O que você procura hoje?"
+            />
+
+            @if (searchControl.value) {
+               <button
+                  (click)="clearSearch()"
+                  class="absolute right-10 top-1 bottom-1 w-8 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors"
+                  title="Limpar busca"
                >
-                  <p
-                     class="text-white transform transition-transform duration-200 ease-in-out hover:scale-110"
+                  <svg
+                     xmlns="http://www.w3.org/2000/svg"
+                     fill="none"
+                     viewBox="0 0 24 24"
+                     stroke-width="2"
+                     stroke="currentColor"
+                     class="w-4 h-4"
                   >
-                     {{ link.label }}
-                  </p>
-               </a>
+                     <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M6 18L18 6M6 6l12 12"
+                     />
+                  </svg>
+               </button>
             }
-            @if (isAdmin()) {
-               <a
-                  class="pointer"
-                  [routerLink]="'/admin'"
-                  routerLinkActive="active-link"
-                  title="Navegar para Gerenciamento"
-                  tabindex="0"
-               >
-                  <p
-                     class="text-white transform transition-transform duration-200 ease-in-out hover:scale-110"
-                  >
-                     Gerenciamento
-                  </p>
-               </a>
-            }
-            <a class="pointer" routerLink="/cart" tabindex="0">
-               <img
-                  class="w-8"
-                  ngSrc="{{ cart }}"
-                  alt="{{ cartAlt }}"
-                  width="30"
-                  height="30"
-                  title="Navegar para carrinho de compras"
-                  priority
-               />
-            </a>
-            <a
-               class="pointer"
-               [routerLink]="profileLink()"
-               [title]="profileTitle()"
-               tabindex="0"
+
+            <button
+               (click)="onSearch()"
+               class="absolute right-1 top-1 bottom-1 w-8 h-8 bg-orange-base rounded-full flex items-center justify-center hover:bg-orange-dark transition-colors text-white"
             >
-               @if (isLogged()) {
-                  <div
-                     class="w-8 h-8 rounded-full bg-orange-base text-white flex items-center justify-center text-xs font-bold border border-white shadow-sm hover:bg-orange-dark transition-colors"
-                  >
-                     {{ userInitials() }}
-                  </div>
-               } @else {
-                  <img
-                     class="w-8"
-                     ngSrc="{{ profile }}"
-                     alt="{{ profileAlt }}"
-                     width="30"
-                     height="30"
-                     priority
+               <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  stroke="currentColor"
+                  class="w-4 h-4"
+               >
+                  <path
+                     stroke-linecap="round"
+                     stroke-linejoin="round"
+                     d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
                   />
-               }
-            </a>
+               </svg>
+            </button>
          </div>
 
-         <div class="sm:hidden">
-            <app-burger-button
-               (toggleChange)="toggleMenu()"
-               [isOpen]="isOpen"
-            ></app-burger-button>
+         <div class="flex items-center justify-end shrink-0 gap-4 h-full">
+            <div class="hidden md:flex items-center gap-6 lg:gap-8">
+               @for (link of navPaths; track link.path) {
+                  <a
+                     class="pointer group"
+                     [routerLink]="link.path"
+                     routerLinkActive="active-link"
+                     [routerLinkActiveOptions]="{ exact: link.path === '/' }"
+                  >
+                     <p
+                        class="text-white font-medium hover:scale-110 transition-transform"
+                     >
+                        {{ link.label }}
+                     </p>
+                  </a>
+               }
+
+               @if (isLogged()) {
+                  <a
+                     class="pointer group"
+                     routerLink="/orders/history"
+                     routerLinkActive="active-link"
+                  >
+                     <p
+                        class="text-white font-medium hover:scale-110 transition-transform"
+                     >
+                        Meus Pedidos
+                     </p>
+                  </a>
+               }
+
+               @if (isAdmin()) {
+                  <a
+                     class="pointer group"
+                     [routerLink]="'/admin'"
+                     routerLinkActive="active-link"
+                  >
+                     <p
+                        class="text-white font-medium hover:scale-110 transition-transform"
+                     >
+                        Gerenciamento
+                     </p>
+                  </a>
+               }
+
+               <a
+                  class="relative pointer group flex items-center"
+                  routerLink="/cart"
+               >
+                  @if (selectedItemsCount$ | async; as count) {
+                     @if (count > 0) {
+                        <span
+                           class="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-[10px] font-bold text-white border-2 border-primary"
+                        >
+                           {{ count }}
+                        </span>
+                     }
+                  }
+                  <img
+                     class="w-7 group-hover:scale-110 transition-transform"
+                     ngSrc="{{ cart }}"
+                     alt="{{ cartAlt }}"
+                     width="30"
+                     height="30"
+                  />
+               </a>
+
+               <a
+                  class="pointer group flex items-center"
+                  [routerLink]="profileLink()"
+               >
+                  @if (isLogged()) {
+                     <div
+                        class="w-9 h-9 rounded-full bg-orange-base text-white flex items-center justify-center text-sm font-bold border-2 border-white"
+                     >
+                        {{ userInitials() }}
+                     </div>
+                  } @else {
+                     <img
+                        class="w-7 group-hover:scale-110 transition-transform"
+                        ngSrc="{{ profile }}"
+                        alt="{{ profileAlt }}"
+                        width="30"
+                        height="30"
+                     />
+                  }
+               </a>
+            </div>
+
+            <div class="flex md:hidden items-center gap-5 mr-2">
+               <button
+                  (click)="toggleSearch()"
+                  class="text-white p-1 focus:outline-none active:scale-95 transition-transform flex items-center justify-center"
+               >
+                  <svg
+                     xmlns="http://www.w3.org/2000/svg"
+                     fill="none"
+                     viewBox="0 0 24 24"
+                     stroke-width="2"
+                     stroke="currentColor"
+                     class="w-7 h-7"
+                  >
+                     <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+                     />
+                  </svg>
+               </button>
+
+               <div class="relative z-50 flex items-center justify-center">
+                  <app-burger-button
+                     (toggleChange)="toggleMenu()"
+                     [isOpen]="isOpen"
+                  ></app-burger-button>
+               </div>
+            </div>
          </div>
       </div>
+
+      @if (isSearchOpen) {
+         <div
+            class="md:hidden absolute top-full left-0 w-full bg-primary px-4 pb-4 shadow-md border-t border-white/10 animate-fade-in z-40"
+         >
+            <div class="relative mt-2">
+               <input
+                  [formControl]="searchControl"
+                  #mobileSearchInput
+                  (keydown.enter)="onSearch()"
+                  type="text"
+                  class="w-full h-12 pl-4 pr-20 rounded-lg bg-white text-gray-800 placeholder-gray-500 focus:ring-2 focus:ring-orange-base outline-none text-base"
+                  placeholder="O que você procura?"
+               />
+
+               @if (searchControl.value) {
+                  <button
+                     (click)="clearSearch()"
+                     class="absolute right-12 top-0 bottom-0 px-2 text-gray-400 hover:text-gray-600"
+                  >
+                     <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="2"
+                        stroke="currentColor"
+                        class="w-5 h-5"
+                     >
+                        <path
+                           stroke-linecap="round"
+                           stroke-linejoin="round"
+                           d="M6 18L18 6M6 6l12 12"
+                        />
+                     </svg>
+                  </button>
+               }
+
+               <button
+                  (click)="onSearch()"
+                  class="absolute right-0 top-0 bottom-0 px-4 text-orange-base"
+               >
+                  <svg
+                     xmlns="http://www.w3.org/2000/svg"
+                     class="h-6 w-6"
+                     fill="none"
+                     viewBox="0 0 24 24"
+                     stroke="currentColor"
+                  >
+                     <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                     />
+                  </svg>
+               </button>
+            </div>
+         </div>
+      }
    </div>
 
    <app-hide-menu

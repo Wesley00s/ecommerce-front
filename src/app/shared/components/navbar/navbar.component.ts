@@ -1,17 +1,15 @@
-import {
-   Component,
-   computed,
-   HostListener,
-   inject,
-   OnDestroy,
-} from '@angular/core';
-import { NgClass, NgOptimizedImage } from '@angular/common';
+import { Component, computed, inject, OnInit } from '@angular/core';
+import { AsyncPipe, NgOptimizedImage } from '@angular/common';
 import { NAV_PATHS } from '../../../core/navigation/navigation.constant';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { HideMenuComponent } from '../hide-menu/hide-menu.component';
 import { BurgerButtonComponent } from '../burger-button/burger-button.component';
 import { AuthService } from '../../../core/services/auth.service';
 import { UserType } from '../../../core/enum/UserType';
+import { CartService } from '../../../core/services/cart.service';
+import { map, Observable } from 'rxjs';
+import { ItemStatus } from '../../../core/enum/ItemStatus';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
    selector: 'app-navbar',
@@ -20,13 +18,14 @@ import { UserType } from '../../../core/enum/UserType';
       RouterLinkActive,
       HideMenuComponent,
       BurgerButtonComponent,
-      NgClass,
       NgOptimizedImage,
+      AsyncPipe,
+      ReactiveFormsModule,
    ],
    templateUrl: './navbar.component.html',
    styleUrl: './navbar.component.sass',
 })
-export class NavbarComponent implements OnDestroy {
+export class NavbarComponent implements OnInit {
    protected logo = 'assets/images/logo.svg';
    protected cart = 'assets/images/cart.svg';
    protected profile = 'assets/images/profile.svg';
@@ -35,33 +34,24 @@ export class NavbarComponent implements OnDestroy {
    protected profileAlt = 'Profile';
    protected navPaths = NAV_PATHS;
    private authService = inject(AuthService);
+   private cartService = inject(CartService);
+   private router = inject(Router);
+
+   searchControl = new FormControl('');
+
+   selectedItemsCount$!: Observable<number>;
 
    protected isOpen = false;
+   protected isSearchOpen = false;
 
    toggleMenu() {
       this.isOpen = !this.isOpen;
+      if (this.isOpen) this.isSearchOpen = false;
    }
 
-   private currentScroll = 0;
-   protected isScrolling = false;
-   private scrollTimeout!: ReturnType<typeof setTimeout>;
-
-   @HostListener('window:scroll', [])
-   onWindowScroll() {
-      this.currentScroll =
-         window.pageYOffset ||
-         document.documentElement.scrollTop ||
-         document.body.scrollTop ||
-         0;
-      if (this.currentScroll >= 450 && !this.isOpen) {
-         this.isScrolling = true;
-
-         clearTimeout(this.scrollTimeout);
-
-         this.scrollTimeout = setTimeout(() => {
-            this.isScrolling = false;
-         }, 800);
-      }
+   toggleSearch() {
+      this.isSearchOpen = !this.isSearchOpen;
+      if (this.isSearchOpen) this.isOpen = false;
    }
 
    protected userInitials = this.authService.userInitials;
@@ -81,7 +71,39 @@ export class NavbarComponent implements OnDestroy {
       return this.isLogged() ? 'Navegar para perfil' : 'Navegar para login';
    });
 
-   ngOnDestroy() {
-      clearTimeout(this.scrollTimeout);
+   ngOnInit() {
+      this.selectedItemsCount$ = this.cartService.cart$.pipe(
+         map((cart) => {
+            if (!cart || !cart.items) return 0;
+            const activeItems = cart.items.filter(
+               (i) => i.status === ItemStatus.PENDING,
+            );
+            return activeItems.length;
+         }),
+      );
+
+      if (this.isLogged()) {
+         this.cartService.getCart().subscribe();
+      }
+   }
+
+   onSearch() {
+      const query = this.searchControl.value;
+
+      if (query && query.trim().length > 0) {
+         this.router.navigate(['/search'], {
+            queryParams: { q: query },
+         });
+
+         this.isSearchOpen = false;
+
+         if (document.activeElement instanceof HTMLElement) {
+            document.activeElement.blur();
+         }
+      }
+   }
+
+   clearSearch() {
+      this.searchControl.setValue('');
    }
 }
