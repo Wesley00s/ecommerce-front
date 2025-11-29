@@ -1,0 +1,44 @@
+<div
+   class="min-h-screen flex flex-col items-center justify-start pb-32 md:pb-0"
+>
+   @if (productState$ | async; as state) {
+      @if (state.loading) {
+         <div
+            class="flex-grow flex items-center justify-center w-full h-[50vh]"
+         >
+            <app-loading-container
+               [message]="'Carregando detalhes do produto...'"
+            ></app-loading-container>
+         </div>
+      } @else if (state.error) {
+         <div
+            class="flex-grow flex items-center justify-center w-full h-[50vh]"
+         >
+            <app-info-container
+               [infoMessage]="
+                  'O produto que você está procurando não existe ou foi removido.'
+               "
+            ></app-info-container>
+         </div>
+      } @else {
+         @if (state.product; as product) {
+            <div class="w-full flex justify-center">
+               <div class="container flex flex-col gap-12">
+                  <app-product-details
+                     [product]="product"
+                  ></app-product-details>
+                  <app-reviews [productCode]="product.code"></app-reviews>
+               </div>
+            </div>
+         } @else {
+            <div class="flex-grow flex items-center justify-center w-full">
+               <app-info-container
+                  [infoMessage]="
+                     'O produto que você está procurando não existe ou foi removido.'
+                  "
+               ></app-info-container>
+            </div>
+         }
+      }
+   }
+</div>

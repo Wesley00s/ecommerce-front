@@ -12,7 +12,7 @@ import { InfoContainerComponent } from '../../../../shared/components/info-conta
 import { LoadingContainerComponent } from '../../../../shared/components/loading-container/loading-container.component';
 
 @Component({
-   selector: 'app-products',
+   selector: 'app-products-details',
    imports: [
       ProductDetailsComponent,
       ReviewsComponent,
@@ -20,10 +20,10 @@ import { LoadingContainerComponent } from '../../../../shared/components/loading
       InfoContainerComponent,
       LoadingContainerComponent,
    ],
-   templateUrl: './products.feature.html',
-   styleUrl: './products.feature.sass',
+   templateUrl: './products-details.feature.html',
+   styleUrl: './products-details.feature.sass',
 })
-export class ProductsFeature implements OnInit {
+export class ProductsDetailsFeature implements OnInit {
    protected route = inject(ActivatedRoute);
    protected productService = inject(ProductService);
    protected productCode!: string;
