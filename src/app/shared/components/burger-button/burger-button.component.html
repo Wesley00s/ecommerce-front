@@ -1,18 +1,18 @@
 <button
    (click)="onClick()"
    aria-label="Menu"
-   class="w-8 h-8 focus:outline-none fixed top-6 right-5 z-50 sm:hidden cursor-pointer"
+   class="w-8 h-8 focus:outline-none relative z-50 cursor-pointer flex items-center justify-center"
 >
    <span
-      class="absolute left-0 top-1/2 block h-1 rounded w-full bg-white transform transition duration-300"
+      class="absolute left-0 block h-0.5 rounded-full w-full bg-white transform transition-all duration-300 ease-in-out"
       [ngClass]="{
-         'translate-y-[0px] rotate-45': isOpen,
-         'translate-y-[-10px] rotate-0': !isOpen,
+         'top-1/2 -translate-y-1/2 rotate-45': isOpen,
+         'top-2 rotate-0': !isOpen,
       }"
    ></span>
 
    <span
-      class="absolute left-0 top-1/2 block h-1 rounded w-full bg-white transform transition-opacity duration-300"
+      class="absolute left-0 top-1/2 -translate-y-1/2 block h-0.5 rounded-full w-full bg-white transform transition-opacity duration-300"
       [ngClass]="{
          'opacity-0': isOpen,
          'opacity-100': !isOpen,
@@ -20,10 +20,10 @@
    ></span>
 
    <span
-      class="absolute left-0 top-1/2 block h-1 rounded w-full bg-white transform transition duration-300"
+      class="absolute left-0 block h-0.5 rounded-full w-full bg-white transform transition-all duration-300 ease-in-out"
       [ngClass]="{
-         'translate-y-[0px] -rotate-45': isOpen,
-         'translate-y-[10px] rotate-0': !isOpen,
+         'top-1/2 -translate-y-1/2 -rotate-45': isOpen,
+         'bottom-2 rotate-0': !isOpen,
       }"
    ></span>
 </button>
