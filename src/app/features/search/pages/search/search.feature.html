@@ -1,0 +1,145 @@
+<div class="container mx-auto px-4 py-6 pt-24 min-h-screen">
+   @if (state$ | async; as state) {
+      <div class="mb-8 border-b border-gray-200 pb-6">
+         <div
+            class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
+         >
+            <div>
+               <div
+                  class="flex items-center gap-2 text-xs md:text-sm text-gray-500 mb-1"
+               >
+                  <a routerLink="/" class="hover:text-orange-base">Home</a>
+                  <span>/</span>
+                  <span>Busca</span>
+               </div>
+
+               <h1 class="text-2xl md:text-3xl font-bold text-gray-900">
+                  Resultados para
+                  <span class="text-orange-base">"{{ state.query }}"</span>
+               </h1>
+               @if (!state.loading) {
+                  <p class="text-sm text-gray-500 mt-1">
+                     {{ state.pagination.totalElements }} produtos encontrados
+                  </p>
+               }
+            </div>
+
+            @if (state.products.length > 0) {
+               <div class="flex gap-2 w-full md:w-auto">
+                  <select
+                     [formControl]="sortControl"
+                     class="w-full md:w-40 p-2 text-sm border border-gray-300 rounded-lg focus:ring-orange-base focus:border-orange-base bg-white"
+                  >
+                     <option [ngValue]="null">Relevância</option>
+                     <option [ngValue]="SortBy.PRICE">Preço</option>
+                     <option [ngValue]="SortBy.NAME">Nome</option>
+                     <option [ngValue]="SortBy.RATING">Avaliação</option>
+                  </select>
+
+                  <select
+                     [formControl]="directionControl"
+                     class="w-32 p-2 text-sm border border-gray-300 rounded-lg focus:ring-orange-base focus:border-orange-base bg-white"
+                  >
+                     <option [ngValue]="SortDirection.ASC">Crescente</option>
+                     <option [ngValue]="SortDirection.DESC">Decrescente</option>
+                  </select>
+               </div>
+            }
+         </div>
+      </div>
+
+      @if (state.loading) {
+         <app-loading-container
+            message="Buscando produtos..."
+         ></app-loading-container>
+      }
+
+      @if (!state.loading && !state.error) {
+         @if (state.products.length > 0) {
+            <div
+               class="container flex flex-row flex-wrap justify-center items-center mb-24 md:gap-5"
+            >
+               @for (product of state.products; track product.id) {
+                  <app-product-card [product]="product"></app-product-card>
+               }
+            </div>
+
+            @if (state.pagination.totalPages > 1) {
+               <div class="flex justify-center items-center gap-4 mb-10">
+                  <button
+                     (click)="prevPage(state.pagination.page)"
+                     [disabled]="state.pagination.page === 0"
+                     class="flex items-center justify-center px-4 h-10 text-base font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                     Anterior
+                  </button>
+
+                  <span class="text-sm text-gray-700">
+                     Página
+                     <span class="font-bold">{{
+                        state.pagination.page + 1
+                     }}</span>
+                     de
+                     <span class="font-bold">{{
+                        state.pagination.totalPages
+                     }}</span>
+                  </span>
+
+                  <button
+                     (click)="
+                        nextPage(
+                           state.pagination.page,
+                           state.pagination.totalPages
+                        )
+                     "
+                     [disabled]="
+                        state.pagination.page >= state.pagination.totalPages - 1
+                     "
+                     class="flex items-center justify-center px-4 h-10 text-base font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                     Próxima
+                  </button>
+               </div>
+            }
+         } @else {
+            <div
+               class="text-center py-20 bg-gray-50 rounded-xl border border-dashed border-gray-200"
+            >
+               <div
+                  class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4"
+               >
+                  <svg
+                     class="w-8 h-8 text-gray-400"
+                     fill="none"
+                     viewBox="0 0 24 24"
+                     stroke="currentColor"
+                  >
+                     <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                     />
+                  </svg>
+               </div>
+               <h3 class="text-lg font-bold text-gray-900">
+                  Nenhum resultado encontrado
+               </h3>
+               <p class="text-gray-500 mt-1">
+                  Não encontramos produtos para "{{ state.query }}".
+               </p>
+               <p class="text-gray-400 text-sm mt-2">
+                  Tente verificar a ortografia ou usar termos mais genéricos.
+               </p>
+
+               <a
+                  routerLink="/"
+                  class="mt-6 inline-block px-6 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors"
+               >
+                  Voltar para a Loja
+               </a>
+            </div>
+         }
+      }
+   }
+</div>
