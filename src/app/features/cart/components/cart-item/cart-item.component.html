@@ -1,0 +1,91 @@
+<div
+   class="flex gap-3 md:gap-6 py-4 md:py-6 border-b border-gray-100 last:border-0 animate-fade-in"
+>
+   <div class="flex items-center h-20 md:h-28 shrink-0">
+      <input
+         type="checkbox"
+         [checked]="item.status === ItemStatus.PENDING"
+         (change)="onToggleSelection($event)"
+         class="w-5 h-5 text-orange-base border-gray-300 rounded focus:ring-orange-base cursor-pointer transition-all"
+      />
+   </div>
+
+   <div
+      class="w-20 h-20 md:w-28 md:h-28 shrink-0 bg-gray-50 border border-gray-200 rounded-lg overflow-hidden p-1"
+   >
+      <img
+         [ngSrc]="item.product.coverImageUrl | toRelativePath"
+         [alt]="item.product.name"
+         width="200"
+         height="200"
+         class="w-full h-full object-contain mix-blend-multiply"
+      />
+   </div>
+
+   <div
+      class="flex-1 flex flex-col justify-between min-h-[80px] md:min-h-[112px]"
+   >
+      <div class="flex justify-between items-start gap-2">
+         <div class="flex flex-col">
+            <span
+               class="text-[10px] md:text-xs font-bold text-blue-600 uppercase tracking-wider mb-0.5"
+            >
+               {{ item.product.categoryName }}
+            </span>
+            <a
+               [routerLink]="['/products/details', item.product.code]"
+               class="text-sm md:text-base font-medium text-gray-900 hover:text-orange-base leading-tight line-clamp-2"
+            >
+               {{ item.product.name }}
+            </a>
+         </div>
+
+         <button
+            (click)="onRemove()"
+            class="text-gray-400 hover:text-red-600 transition-colors p-1 -mt-1 -mr-1 md:mt-0 md:mr-0"
+            title="Remover item"
+         >
+            <svg
+               xmlns="http://www.w3.org/2000/svg"
+               fill="none"
+               viewBox="0 0 24 24"
+               stroke-width="1.5"
+               stroke="currentColor"
+               class="w-5 h-5"
+            >
+               <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+               />
+            </svg>
+         </button>
+      </div>
+
+      <div
+         class="flex flex-wrap items-center justify-between gap-x-2 gap-y-3 mt-2 md:mt-0"
+      >
+         <app-quantity-stepper
+            [stock]="item.product.stock"
+            [initialValue]="item.quantity"
+            (quantityChange)="onQuantityChange($event)"
+         >
+         </app-quantity-stepper>
+
+         <div class="text-right flex flex-col justify-end ml-auto">
+            @if (item.quantity > 1) {
+               <span
+                  class="text-[10px] md:text-xs text-gray-400 whitespace-nowrap"
+               >
+                  {{ item.product.price | currency: "BRL" }} un.
+               </span>
+            }
+            <span
+               class="font-bold text-gray-900 text-base md:text-lg leading-none whitespace-nowrap"
+            >
+               {{ item.product.price * item.quantity | currency: "BRL" }}
+            </span>
+         </div>
+      </div>
+   </div>
+</div>
