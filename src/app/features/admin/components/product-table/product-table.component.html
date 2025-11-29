@@ -33,8 +33,10 @@
             >
                <td class="px-6 py-4">
                   <div class="flex items-center gap-4">
-                     <div
-                        class="h-12 w-12 rounded-lg overflow-hidden border border-gray-200 shadow-sm shrink-0"
+                     <a
+                        [routerLink]="['/products/details', product.code]"
+                        class="h-12 w-12 rounded-lg overflow-hidden border border-gray-200 shadow-sm shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
+                        title="Ver detalhes do produto"
                      >
                         <img
                            [ngSrc]="product.coverImageUrl"
@@ -43,9 +45,13 @@
                            width="100"
                            height="100"
                         />
-                     </div>
-                     <div>
-                        <div class="font-medium text-gray-900">
+                     </a>
+
+                     <div class="min-w-0">
+                        <div
+                           class="font-medium text-gray-900 truncate max-w-[200px]"
+                           title="{{ product.name }}"
+                        >
                            {{ product.name }}
                         </div>
                         <div class="text-xs text-gray-500 font-mono mt-0.5">
@@ -150,13 +156,21 @@
             <div
                class="w-20 h-20 rounded-lg overflow-hidden border border-gray-100 shrink-0"
             >
-               <img
-                  [ngSrc]="product.coverImageUrl"
-                  [alt]="product.name"
+               <a
+                  [routerLink]="['/products/details', product.code]"
                   class="w-full h-full object-cover"
                   width="200"
                   height="200"
-               />
+                  title="Ver detalhes do produto"
+               >
+                  <img
+                     [ngSrc]="product.coverImageUrl"
+                     [alt]="product.name"
+                     class="w-full h-full object-cover"
+                     width="100"
+                     height="100"
+                  />
+               </a>
             </div>
             <div class="flex-1 min-w-0 flex flex-col justify-between">
                <div>
@@ -191,11 +205,15 @@
                   <span class="font-medium text-red-600">Esgotado</span>
                }
             </div>
-            <div>
+
+            <div class="min-w-0">
                <span class="text-gray-500 text-xs uppercase block">Código</span>
-               <span class="font-mono text-gray-700">{{
-                  product.code || "-"
-               }}</span>
+               <span
+                  class="font-mono text-gray-700 block truncate"
+                  title="{{ product.code }}"
+               >
+                  {{ product.code || "-" }}
+               </span>
             </div>
          </div>
 
