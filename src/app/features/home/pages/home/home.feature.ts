@@ -10,6 +10,7 @@ import { AsyncPipe } from '@angular/common';
 import { LoadingContainerComponent } from '../../../../shared/components/loading-container/loading-container.component';
 import { ErrorContainerComponent } from '../../../../shared/components/error-container/error-container.component';
 import { CategoryService } from '../../../../core/services/category.service';
+import { RouterLink } from '@angular/router';
 
 interface CategoryCardData {
    image: string;
@@ -27,6 +28,7 @@ interface CategoryCardData {
       LoadingContainerComponent,
       ErrorContainerComponent,
       ProductCardComponent,
+      RouterLink,
    ],
    templateUrl: './home.feature.html',
    styleUrl: './home.feature.sass',
@@ -118,5 +120,12 @@ export class HomeFeature implements OnInit {
             });
          }),
       );
+   }
+
+   scrollToProductsSection(): void {
+      const element = document.getElementById('products');
+      if (element) {
+         element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
    }
 }
