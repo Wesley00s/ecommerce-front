@@ -1,0 +1,213 @@
+<div
+   class="hidden md:block relative overflow-hidden shadow-lg sm:rounded-xl bg-white border border-gray-100"
+>
+   <table class="w-full text-sm text-left text-gray-500">
+      <thead
+         class="text-xs text-gray-500 uppercase bg-gray-50/80 border-b border-gray-100"
+      >
+         <tr>
+            <th scope="col" class="px-6 py-4 font-semibold tracking-wider">
+               ID
+            </th>
+            <th scope="col" class="px-6 py-4 font-semibold tracking-wider">
+               Data
+            </th>
+            <th scope="col" class="px-6 py-4 font-semibold tracking-wider">
+               Itens
+            </th>
+            <th scope="col" class="px-6 py-4 font-semibold tracking-wider">
+               Total
+            </th>
+            <th scope="col" class="px-6 py-4 font-semibold tracking-wider">
+               Status
+            </th>
+            <th
+               scope="col"
+               class="px-6 py-4 text-right font-semibold tracking-wider"
+            >
+               Ações
+            </th>
+         </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+         @for (order of orders; track order.orderId) {
+            <tr
+               class="bg-white hover:bg-blue-50/30 transition-colors duration-200"
+            >
+               <td
+                  class="px-6 py-4 font-mono text-xs font-medium text-gray-900"
+               >
+                  #{{ order.orderId }}
+               </td>
+               <td class="px-6 py-4 whitespace-nowrap">
+                  {{ order.createdAt | date: "dd/MM/yyyy HH:mm" }}
+               </td>
+               <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex -space-x-2 overflow-hidden">
+                     @for (item of order.items.slice(0, 3); track item.itemID) {
+                        <img
+                           [src]="item.product.coverImageUrl"
+                           class="inline-block h-8 w-8 rounded-full ring-2 ring-white object-cover bg-gray-100"
+                           [title]="item.product.name"
+                           alt="{{ item.product.name }}"
+                        />
+                     }
+                     @if (order.items.length > 3) {
+                        <span
+                           class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 ring-2 ring-white text-xs font-medium text-gray-500"
+                        >
+                           +{{ order.items.length - 3 }}
+                        </span>
+                     }
+                  </div>
+               </td>
+               <td class="px-6 py-4 whitespace-nowrap font-bold text-gray-900">
+                  {{ calculateTotal(order) | currency: "BRL" }}
+               </td>
+               <td class="px-6 py-4 whitespace-nowrap">
+                  <span
+                     class="px-2.5 py-0.5 rounded-full text-xs font-medium border"
+                     [ngClass]="getStatusColor(order.orderStatus)"
+                  >
+                     {{ getStatusLabel(order.orderStatus) }}
+                  </span>
+               </td>
+               <td class="px-6 py-4 text-right">
+                  <div class="flex items-center justify-end gap-2">
+                     <button
+                        (click)="viewDetails.emit(order)"
+                        class="p-1.5 rounded-lg text-blue-600 hover:bg-blue-50 border border-transparent hover:border-blue-100 transition-all"
+                        title="Ver Detalhes do Cliente e Pedido"
+                     >
+                        <svg
+                           xmlns="http://www.w3.org/2000/svg"
+                           fill="none"
+                           viewBox="0 0 24 24"
+                           stroke-width="1.5"
+                           stroke="currentColor"
+                           class="w-5 h-5"
+                        >
+                           <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
+                           />
+                           <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                           />
+                        </svg>
+                     </button>
+
+                     @if (order.orderStatus === OrderStatus.CREATED) {
+                        <div class="w-px h-4 bg-gray-300 mx-1"></div>
+                        <button
+                           (click)="approve.emit(order.orderId)"
+                           class="p-1.5 rounded-lg text-green-600 hover:bg-green-50"
+                           title="Aprovar"
+                        >
+                           <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke-width="1.5"
+                              stroke="currentColor"
+                              class="w-5 h-5"
+                           >
+                              <path
+                                 stroke-linecap="round"
+                                 stroke-linejoin="round"
+                                 d="M4.5 12.75l6 6 9-13.5"
+                              />
+                           </svg>
+                        </button>
+                        <button
+                           (click)="reject.emit(order.orderId)"
+                           class="p-1.5 rounded-lg text-red-600 hover:bg-red-50"
+                           title="Rejeitar"
+                        >
+                           <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke-width="1.5"
+                              stroke="currentColor"
+                              class="w-5 h-5"
+                           >
+                              <path
+                                 stroke-linecap="round"
+                                 stroke-linejoin="round"
+                                 d="M6 18L18 6M6 6l12 12"
+                              />
+                           </svg>
+                        </button>
+                     }
+                  </div>
+               </td>
+            </tr>
+         } @empty {
+            <tr>
+               <td colspan="6" class="px-6 py-12 text-center text-gray-500">
+                  Nenhum pedido encontrado.
+               </td>
+            </tr>
+         }
+      </tbody>
+   </table>
+</div>
+
+<div class="grid grid-cols-1 gap-4 md:hidden">
+   @for (order of orders; track order.orderId) {
+      <div
+         class="bg-white shadow-sm rounded-xl p-4 border border-gray-200 flex flex-col gap-3"
+         (click)="viewDetails.emit(order)"
+         (keyup)="viewDetails.emit(order)"
+         tabindex="0"
+      >
+         <div class="flex justify-between items-start">
+            <div>
+               <span class="text-xs font-mono text-gray-500"
+                  >#{{ order.orderId }}</span
+               >
+               <p class="text-sm text-gray-500">
+                  {{ order.createdAt | date: "dd/MM/yyyy" }}
+               </p>
+            </div>
+            <span
+               class="px-2.5 py-0.5 rounded-full text-xs font-medium border"
+               [ngClass]="getStatusColor(order.orderStatus)"
+            >
+               {{ getStatusLabel(order.orderStatus) }}
+            </span>
+         </div>
+         <div class="flex justify-between items-center pt-2">
+            <span class="text-sm font-medium text-gray-600"
+               >{{ order.items.length }} itens</span
+            >
+            <span class="text-lg font-bold text-gray-900">{{
+               calculateTotal(order) | currency: "BRL"
+            }}</span>
+         </div>
+         <p
+            class="text-xs text-blue-600 text-center mt-1 font-medium flex items-center justify-center gap-1"
+         >
+            Toque para ver detalhes
+            <svg
+               xmlns="http://www.w3.org/2000/svg"
+               class="h-3 w-3"
+               fill="none"
+               viewBox="0 0 24 24"
+               stroke="currentColor"
+            >
+               <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5l7 7-7 7"
+               />
+            </svg>
+         </p>
+      </div>
+   }
+</div>
