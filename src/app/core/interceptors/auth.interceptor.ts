@@ -39,7 +39,7 @@ export const authInterceptor: HttpInterceptorFn = (
             }
 
             cookieService.delete('token', '/');
-            router.navigate(['/login']).then(() => {
+            router.navigate(['/sign-in']).then(() => {
                window.location.reload();
             });
          }
