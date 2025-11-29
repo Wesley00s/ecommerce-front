@@ -14,6 +14,7 @@ export class ButtonComponent {
    @Input() color = 'bg-blue-base';
    @Input() hover = 'hover:bg-blue-dark';
    @Input() icon!: string;
+   @Input() shadow = 'shadow-sm';
 
    @Output() clicked = new EventEmitter<void>();
 
