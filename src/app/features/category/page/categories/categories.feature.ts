@@ -1,13 +1,10 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { AsyncPipe } from '@angular/common';
 import {
    BehaviorSubject,
    catchError,
-   combineLatest,
-   debounceTime,
-   distinctUntilChanged,
    map,
    Observable,
    of,
@@ -24,6 +21,10 @@ import { ProductCardComponent } from '../../../../shared/components/product-card
 import { LoadingContainerComponent } from '../../../../shared/components/loading-container/loading-container.component';
 import { SortBy } from '../../../../core/enum/SortBy';
 import { SortDirection } from '../../../../core/enum/SortDirection';
+import {
+   FilterBarComponent,
+   FilterChangeEvent,
+} from '../../../../shared/components/filter-bar/filter-bar.component';
 
 interface FilterState {
    page: number;
@@ -41,6 +42,7 @@ interface FilterState {
       LoadingContainerComponent,
       RouterLink,
       ReactiveFormsModule,
+      FilterBarComponent,
    ],
    templateUrl: './categories.feature.html',
    styleUrl: './categories.feature.sass',
@@ -50,16 +52,11 @@ export class CategoriesFeature implements OnInit {
    private productService = inject(ProductService);
    private categoryService = inject(CategoryService);
 
-   searchControl = new FormControl('');
-   sortControl = new FormControl<SortBy | null>(null);
-   directionControl = new FormControl<SortDirection>(SortDirection.ASC);
-
-   readonly SortBy = SortBy;
-   readonly SortDirection = SortDirection;
+   @ViewChild(FilterBarComponent) filterBar!: FilterBarComponent;
 
    private initialFilterState: FilterState = {
       page: 0,
-      size: 15,
+      size: 12,
       name: '',
       sortBy: undefined,
       sortDirection: SortDirection.ASC,
@@ -79,53 +76,10 @@ export class CategoriesFeature implements OnInit {
    }>;
 
    ngOnInit(): void {
-      this.setupFilterListeners();
-
       this.state$ = this.route.paramMap.pipe(
-         tap(() => {
-            this.resetFilters();
-         }),
+         tap(() => this.clearFilters(false)),
          switchMap((params) => {
-            const urlCategoryName = params.get('category');
-
-            if (!urlCategoryName) {
-               return this.filterSubject.pipe(
-                  switchMap((filters) =>
-                     this.productService
-                        .getAllProducts(
-                           filters.sortBy,
-                           filters.sortDirection,
-                           filters.name,
-                           undefined,
-                           filters.page,
-                           filters.size,
-                        )
-                        .pipe(
-                           map((prodResponse) => ({
-                              categoryName: 'Todos os Produtos',
-                              products: prodResponse.data,
-                              pagination: prodResponse.pagination,
-                              loading: false,
-                              error: false,
-                              found: true,
-                           })),
-                        ),
-                  ),
-                  startWith({
-                     categoryName: 'Todos os Produtos',
-                     products: [],
-                     pagination: {
-                        page: 0,
-                        size: 0,
-                        totalElements: 0,
-                        totalPages: 0,
-                     },
-                     loading: true,
-                     error: false,
-                     found: true,
-                  }),
-               );
-            }
+            const urlCategoryName = params.get('category') || '';
 
             return this.categoryService
                .getCategories(0, 1, urlCategoryName)
@@ -206,32 +160,19 @@ export class CategoriesFeature implements OnInit {
       );
    }
 
-   setupFilterListeners() {
-      this.searchControl.valueChanges
-         .pipe(debounceTime(400), distinctUntilChanged())
-         .subscribe((term) => {
-            const current = this.filterSubject.value;
-            this.filterSubject.next({ ...current, name: term || '', page: 0 });
-         });
-
-      combineLatest([
-         this.sortControl.valueChanges,
-         this.directionControl.valueChanges,
-      ]).subscribe(([sort, dir]) => {
-         const current = this.filterSubject.value;
-         this.filterSubject.next({
-            ...current,
-            sortBy: sort || undefined,
-            sortDirection: dir || SortDirection.ASC,
-            page: 0,
-         });
+   onFilterChange(event: FilterChangeEvent) {
+      const current = this.filterSubject.value;
+      this.filterSubject.next({
+         ...current,
+         name: event.name,
+         sortBy: event.sortBy,
+         sortDirection: event.sortDirection,
+         page: 0,
       });
    }
 
-   resetFilters() {
-      this.searchControl.setValue('', { emitEvent: false });
-      this.sortControl.setValue(null, { emitEvent: false });
-      this.directionControl.setValue(SortDirection.ASC, { emitEvent: false });
+   clearFilters(resetUI = true) {
+      if (resetUI && this.filterBar) this.filterBar.reset();
       this.filterSubject.next(this.initialFilterState);
    }
 
