@@ -1,23 +1,47 @@
-<div
+<button
+   type="button"
    (click)="onAddReview()"
-   (keydown)="onAddReview()"
-   class="w-full bg-sky-50 border border-sky-200 rounded-lg p-4 flex items-center gap-4 cursor-pointer hover:bg-sky-100 transition-colors"
-   role="button"
-   tabindex="0"
-   aria-label="Adicionar uma nova avaliação"
+   class="group w-full bg-white border border-gray-200 rounded-xl p-4 flex items-center gap-4 transition-all duration-300 hover:shadow-md hover:border-orange-base/50 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-orange-base focus:ring-offset-2 text-left"
 >
-   <div class="flex-shrink-0 bg-white p-2 rounded-full border border-sky-200">
+   <div
+      class="flex-shrink-0 bg-gray-50 p-3 rounded-full border border-gray-100 group-hover:bg-orange-50 group-hover:border-orange-100 transition-colors duration-300"
+   >
       <img
          ngSrc="assets/icons/edit.svg"
-         alt="Escrever avaliação"
+         alt="Review"
          width="24"
          height="24"
+         class="group-hover:scale-110 transition-transform duration-300 opacity-60 group-hover:opacity-100"
       />
    </div>
+
    <div class="flex-1">
-      <h3 class="font-semibold text-sky-800">Qual a sua opinião?</h3>
-      <p class="text-sm text-sky-600">
-         Conte para outros clientes sobre sua experiência.
+      <h3
+         class="font-bold text-gray-800 group-hover:text-orange-base transition-colors"
+      >
+         Escrever uma avaliação
+      </h3>
+      <p class="text-sm text-gray-500 group-hover:text-gray-600">
+         Compartilhe sua experiência com outros clientes
       </p>
    </div>
-</div>
+
+   <div
+      class="text-gray-300 group-hover:text-orange-base group-hover:translate-x-1 transition-all"
+   >
+      <svg
+         xmlns="http://www.w3.org/2000/svg"
+         class="h-5 w-5"
+         fill="none"
+         viewBox="0 0 24 24"
+         stroke="currentColor"
+      >
+         <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 5l7 7-7 7"
+         />
+      </svg>
+   </div>
+</button>
