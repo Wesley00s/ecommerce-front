@@ -4,7 +4,15 @@ import { CategoryCardComponent } from '../../../../shared/components/category-ca
 import { Product } from '../../../../core/@types/Product';
 import { ProductCardComponent } from '../../../../shared/components/product-card/product-card.component';
 import { ProductService } from '../../../../core/services/product.service';
-import { catchError, map, Observable, of, startWith } from 'rxjs';
+import {
+   catchError,
+   map,
+   Observable,
+   of,
+   startWith,
+   BehaviorSubject,
+   finalize,
+} from 'rxjs';
 import { Pagination } from '../../../../core/@types/Pagination';
 import { AsyncPipe } from '@angular/common';
 import { LoadingContainerComponent } from '../../../../shared/components/loading-container/loading-container.component';
@@ -17,6 +25,14 @@ interface CategoryCardData {
    alt: string;
    label: string;
    link: string;
+}
+
+interface ProductState {
+   loading: boolean;
+   loadingMore: boolean;
+   products: Pagination<Product>;
+   error: boolean;
+   errorMessage: string;
 }
 
 @Component({
@@ -37,17 +53,21 @@ export class HomeFeature implements OnInit {
    private productService = inject(ProductService);
    private categoryService = inject(CategoryService);
 
+   private currentPage = 0;
+   private readonly pageSize = 8;
+
    private readonly initialProductState: Pagination<Product> = {
       data: [],
       pagination: { page: 0, size: 0, totalElements: 0, totalPages: 0 },
    };
 
-   productsState$!: Observable<{
-      loading: boolean;
-      products: Pagination<Product>;
-      error: boolean;
-      errorMessage: string;
-   }>;
+   productsState$ = new BehaviorSubject<ProductState>({
+      loading: true,
+      loadingMore: false,
+      products: this.initialProductState,
+      error: false,
+      errorMessage: '',
+   });
 
    categoriesState$!: Observable<{
       loading: boolean;
@@ -57,7 +77,7 @@ export class HomeFeature implements OnInit {
    }>;
 
    ngOnInit() {
-      this.loadAllProducts();
+      this.loadProducts();
       this.loadCategories();
    }
 
@@ -97,29 +117,72 @@ export class HomeFeature implements OnInit {
       );
    }
 
-   loadAllProducts() {
-      this.productsState$ = this.productService.getAllProducts().pipe(
-         map((data) => ({
-            loading: false,
-            products: data,
-            error: false,
-            errorMessage: '',
-         })),
-         startWith({
-            loading: true,
-            products: this.initialProductState,
-            error: false,
-            errorMessage: '',
-         }),
-         catchError((err) => {
-            return of({
-               loading: false,
-               products: this.initialProductState,
-               error: true,
-               errorMessage: err.message,
-            });
-         }),
-      );
+   loadProducts(isLoadMore = false) {
+      const currentState = this.productsState$.value;
+
+
+      if (isLoadMore) {
+         this.productsState$.next({ ...currentState, loadingMore: true });
+      } else {
+         this.productsState$.next({ ...currentState, loading: true });
+      }
+
+      this.productService
+         .getAllProducts(
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            this.currentPage,
+            this.pageSize,
+         )
+         .pipe(
+            finalize(() => {
+
+               const current = this.productsState$.value;
+               this.productsState$.next({
+                  ...current,
+                  loading: false,
+                  loadingMore: false,
+               });
+            }),
+         )
+         .subscribe({
+            next: (response) => {
+               const currentData = isLoadMore ? currentState.products.data : [];
+               const newData = [...currentData, ...response.data];
+
+               this.productsState$.next({
+                  loading: false,
+                  loadingMore: false,
+                  products: {
+                     ...response,
+                     data: newData,
+                  },
+                  error: false,
+                  errorMessage: '',
+               });
+            },
+            error: (err) => {
+               this.productsState$.next({
+                  ...currentState,
+                  loading: false,
+                  loadingMore: false,
+                  error: true,
+                  errorMessage: err.message || 'Erro ao carregar produtos',
+               });
+            },
+         });
+   }
+
+   loadMoreProducts() {
+      const currentState = this.productsState$.value;
+      const totalPages = currentState.products.pagination.totalPages;
+
+      if (this.currentPage < totalPages - 1) {
+         this.currentPage++;
+         this.loadProducts(true);
+      }
    }
 
    scrollToProductsSection(): void {
