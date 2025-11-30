@@ -11,7 +11,6 @@ import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import { StarsComponent } from '../../../../shared/components/stars/stars.component';
-import { OutlinedButtonComponent } from '../../../../shared/components/outlined-button/outlined-button.component';
 import { ButtonComponent } from '../../../../shared/components/button/button.component';
 import { QuantityStepperComponent } from '../../../../shared/components/quantity-stepper/quantity-stepper.component';
 import { ImagePreviewComponent } from '../../../../shared/components/image-preview/image-preview.component';
@@ -31,7 +30,6 @@ register();
    imports: [
       NgOptimizedImage,
       StarsComponent,
-      OutlinedButtonComponent,
       ButtonComponent,
       QuantityStepperComponent,
       ToRelativePathPipe,
@@ -52,7 +50,11 @@ export class ProductDetailsComponent {
    quantity = 1;
    isAddingToCart = false;
    selectedImageForZoom: string | null = null;
+   isDescriptionExpanded = false;
 
+   toggleDescription() {
+      this.isDescriptionExpanded = !this.isDescriptionExpanded;
+   }
    @Input({ required: true })
    set product(value: Product) {
       if (value) {
