@@ -1,153 +1,229 @@
-<div
-   class="flex flex-col w-full pt-24 pb-32 md:pb-12 items-center justify-center min-h-screen bg-white"
->
-   <div class="container mx-auto px-4 max-w-6xl">
-      <div class="flex flex-col md:flex-row items-start w-full gap-8 md:gap-12">
-         <div class="w-full md:w-1/2">
-            <div class="h-full w-full relative">
-               <swiper-container
-                  #mainSwiper
-                  thumbs-swiper="#thumbs-swiper"
-                  slides-per-view="1"
-                  space-between="10"
-                  autoplay-delay="5000"
-                  autoplay-disable-on-interaction="false"
-                  speed="800"
-               >
-                  @for (
-                     imagePair of product.imageUrls | keyvalue;
-                     track imagePair.key
-                  ) {
-                     <swiper-slide>
-                        <img
-                           class="w-full h-90 object-contain cursor-zoom-in"
-                           [ngSrc]="imagePair.value | toRelativePath"
-                           width="800"
-                           height="800"
-                           alt="{{ product.name }}"
-                           tabindex="0"
-                           priority
-                           (click)="openZoom(imagePair.value)"
-                           (keydown.enter)="openZoom(imagePair.value)"
-                        />
-                     </swiper-slide>
-                  }
-               </swiper-container>
-               <swiper-container
-                  #thumbsSwiper
-                  id="thumbs-swiper"
-                  slides-per-view="9"
-                  space-between="5"
-                  watch-slides-progress="true"
-                  free-mode="true"
-                  class="thumbnails-swiper mt-4"
-                  center-insufficient-slides="true"
-               >
-                  @for (
-                     imagePair of product.imageUrls | keyvalue;
-                     track imagePair.key
-                  ) {
-                     <swiper-slide class="thumbnail-slide">
-                        <img
-                           class="w-full h-full object-contain rounded-sm"
-                           [ngSrc]="imagePair.value | toRelativePath"
-                           width="100"
-                           height="100"
-                           tabindex="0"
-                           alt="{{ product.name }} thumbnail"
-                           priority
-                        />
-                     </swiper-slide>
-                  }
-               </swiper-container>
-            </div>
-         </div>
+<div class="flex flex-col w-full pt-24 pb-32 md:pb-20 min-h-screen bg-gray-50">
+   <div class="container mx-auto px-4 max-w-7xl">
+      <div
+         class="mb-6 flex items-center gap-2 text-sm text-gray-500 animate-fade-in"
+      >
+         <a routerLink="/" class="hover:text-primary transition-colors">Home</a>
+         <span>/</span>
+         <a
+            [routerLink]="'/category/' + product.categoryName"
+            class="hover:text-primary transition-colors font-medium text-gray-700"
+         >
+            {{ product.categoryName }}
+         </a>
+      </div>
 
-         <div class="w-full md:w-1/2 flex flex-col gap-4">
-            <div class="flex items-center justify-between">
-               <a
-                  [routerLink]="'/category/' + product.categoryName"
-                  class="px-2 py-1 text-xs font-bold uppercase bg-blue-50 text-blue-600 rounded-md tracking-wider"
-               >
-                  {{ product.categoryName || "Produto" }}
-               </a>
-               <div class="flex items-center gap-2">
-                  <app-stars [productRating]="product.rating"></app-stars>
-                  <span
-                     class="text-sm text-gray-500 underline decoration-dotted"
+      <div
+         class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden animate-fade-in-up"
+      >
+         <div class="flex flex-col lg:flex-row items-start w-full">
+            <div class="w-full lg:w-3/5 p-6 md:p-10 bg-white">
+               <div class="h-full w-full relative">
+                  <swiper-container
+                     #mainSwiper
+                     thumbs-swiper="#thumbs-swiper"
+                     slides-per-view="1"
+                     space-between="10"
+                     autoplay-delay="5000"
+                     autoplay-disable-on-interaction="false"
+                     speed="800"
                   >
-                     ({{ product.totalReviews }} avaliações)
-                  </span>
+                     @for (
+                        imagePair of product.imageUrls | keyvalue;
+                        track imagePair.key
+                     ) {
+                        <swiper-slide>
+                           <img
+                              class="w-full h-90 object-contain cursor-zoom-in"
+                              [ngSrc]="imagePair.value | toRelativePath"
+                              width="800"
+                              height="800"
+                              alt="{{ product.name }}"
+                              tabindex="0"
+                              priority
+                              (click)="openZoom(imagePair.value)"
+                              (keydown.enter)="openZoom(imagePair.value)"
+                           />
+                        </swiper-slide>
+                     }
+                  </swiper-container>
+                  <swiper-container
+                     #thumbsSwiper
+                     id="thumbs-swiper"
+                     slides-per-view="9"
+                     space-between="5"
+                     watch-slides-progress="true"
+                     free-mode="true"
+                     class="thumbnails-swiper mt-4"
+                     center-insufficient-slides="true"
+                  >
+                     @for (
+                        imagePair of product.imageUrls | keyvalue;
+                        track imagePair.key
+                     ) {
+                        <swiper-slide class="thumbnail-slide">
+                           <img
+                              class="w-full h-full object-contain rounded-sm"
+                              [ngSrc]="imagePair.value | toRelativePath"
+                              width="100"
+                              height="100"
+                              tabindex="0"
+                              alt="{{ product.name }} thumbnail"
+                              priority
+                           />
+                        </swiper-slide>
+                     }
+                  </swiper-container>
                </div>
             </div>
 
-            <h1
-               class="text-2xl md:text-4xl font-bold text-gray-900 leading-tight"
-            >
-               {{ product.name }}
-            </h1>
-
-            <div class="border-b border-gray-100 pb-4">
-               <h2 class="text-3xl md:text-4xl font-bold text-green-600">
-                  {{ product.price | currency: "BRL" }}
-               </h2>
-               <p class="text-sm text-gray-400 mt-1">
-                  À vista no PIX ou em até 12x no cartão
-               </p>
-            </div>
-
-            <div class="flex flex-wrap gap-3 py-2">
-               <app-outlined-button
-                  [label]="product.stock + ' em estoque'"
-                  [textColor]="'text-green-600'"
-                  [icon]="'assets/icons/check-circle.svg'"
-               ></app-outlined-button>
-               <app-outlined-button
-                  [label]="
-                     product.soldCount <= 1
-                        ? product.soldCount + ' vendido'
-                        : product.soldCount + ' vendidos'
-                  "
-                  [textColor]="'text-orange-base'"
-                  [icon]="'assets/icons/sold-out.svg'"
-               ></app-outlined-button>
-            </div>
-
-            <div class="mt-2">
-               <h3
-                  class="font-semibold text-gray-900 mb-2 text-sm uppercase tracking-wide"
-               >
-                  Sobre o produto
-               </h3>
-               <p
-                  class="text-gray-600 text-sm md:text-base leading-relaxed text-justify md:text-left"
-               >
-                  {{ product.description }}
-               </p>
-            </div>
-
             <div
-               class="hidden md:flex flex-row items-center gap-4 mt-4 p-6 bg-gray-50 rounded-xl border border-gray-200"
+               class="w-full lg:w-2/5 p-6 md:p-10 flex flex-col gap-6 lg:border-l border-gray-100"
             >
-               <app-quantity-stepper
-                  [stock]="product.stock"
-                  (quantityChange)="updateQuantity($event)"
-               ></app-quantity-stepper>
+               <div>
+                  <div class="flex items-center justify-between mb-2">
+                     <span
+                        class="px-3 py-1 text-xs font-bold uppercase bg-blue-50 text-blue-600 rounded-full tracking-wider"
+                     >
+                        {{ product.categoryName || "Geral" }}
+                     </span>
+                     <div class="flex items-center gap-1">
+                        <app-stars [productRating]="product.rating"></app-stars>
+                        <span class="text-xs text-gray-400 font-medium"
+                           >({{ product.totalReviews }} av.)</span
+                        >
+                     </div>
+                  </div>
 
-               <div class="flex-1">
-                  <app-button
-                     class="w-full"
-                     [label]="
-                        isAddingToCart
-                           ? 'Adicionando...'
-                           : 'Adicionar ao Carrinho'
-                     "
-                     [type]="'button'"
-                     title="Adicionar ao carrinho"
-                     [icon]="isAddingToCart ? '' : 'assets/images/cart.svg'"
-                     [disabled]="!product.stock || isAddingToCart"
-                     (clicked)="addToCart()"
-                  ></app-button>
+                  <h1
+                     class="text-2xl md:text-3xl lg:text-4xl font-extrabold text-gray-900 leading-tight"
+                  >
+                     {{ product.name }}
+                  </h1>
+               </div>
+
+               <div class="p-5 bg-gray-50 rounded-2xl border border-gray-100">
+                  <div class="flex items-baseline gap-2">
+                     <h2 class="text-4xl font-extrabold text-primary">
+                        {{ product.price | currency: "BRL" }}
+                     </h2>
+                  </div>
+                  <p class="text-sm text-gray-500 mt-1 font-medium">
+                     <span class="text-green-600">5% OFF</span> à vista no PIX
+                     ou em até 12x
+                  </p>
+               </div>
+
+               <div class="flex flex-wrap gap-3">
+                  <div
+                     class="inline-flex items-center gap-2 px-3 py-1.5 bg-green-50 text-green-700 rounded-lg text-sm font-medium border border-green-100"
+                  >
+                     <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-4 w-4"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                     >
+                        <path
+                           fill-rule="evenodd"
+                           d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                           clip-rule="evenodd"
+                        />
+                     </svg>
+                     {{ product.stock }} em estoque
+                  </div>
+
+                  <div
+                     class="inline-flex items-center gap-2 px-3 py-1.5 bg-orange-50 text-orange-700 rounded-lg text-sm font-medium border border-orange-100"
+                  >
+                     <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-4 w-4"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                     >
+                        <path
+                           d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"
+                        />
+                     </svg>
+                     {{ product.soldCount }}
+                     {{ product.soldCount <= 1 ? "vendido" : "vendidos" }}
+                  </div>
+               </div>
+
+               <div class="pt-4 border-t border-gray-100">
+                  <h3
+                     class="font-bold text-gray-900 mb-3 text-sm uppercase tracking-wide"
+                  >
+                     Sobre o produto
+                  </h3>
+
+                  <div class="relative">
+                     <div
+                        class="text-gray-600 text-sm md:text-base leading-relaxed text-justify transition-all duration-500 ease-in-out overflow-hidden"
+                        [class.max-h-32]="!isDescriptionExpanded"
+                        [class.max-h-[2000px]]="isDescriptionExpanded"
+                     >
+                        {{ product.description }}
+                     </div>
+
+                     @if (!isDescriptionExpanded) {
+                        <div
+                           class="absolute bottom-0 left-0 w-full h-16 bg-gradient-to-t from-white to-transparent pointer-events-none"
+                        ></div>
+                     }
+                  </div>
+
+                  <button
+                     (click)="toggleDescription()"
+                     class="mt-3 text-primary font-semibold text-sm hover:text-orange-base transition-colors flex items-center gap-1 group focus:outline-none"
+                  >
+                     {{
+                        isDescriptionExpanded
+                           ? "Ler menos"
+                           : "Ler descrição completa"
+                     }}
+                     <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-4 w-4 transform transition-transform duration-300"
+                        [class.rotate-180]="isDescriptionExpanded"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                     >
+                        <path
+                           stroke-linecap="round"
+                           stroke-linejoin="round"
+                           stroke-width="2"
+                           d="M19 9l-7 7-7-7"
+                        />
+                     </svg>
+                  </button>
+               </div>
+
+               <div
+                  class="hidden md:flex flex-row items-center gap-4 mt-auto pt-6 border-t border-gray-100"
+               >
+                  <app-quantity-stepper
+                     [stock]="product.stock"
+                     (quantityChange)="updateQuantity($event)"
+                  ></app-quantity-stepper>
+
+                  <div class="flex-1">
+                     <app-button
+                        class="w-full"
+                        [label]="
+                           isAddingToCart
+                              ? 'Adicionando...'
+                              : 'Adicionar ao Carrinho'
+                        "
+                        [type]="'button'"
+                        title="Adicionar ao carrinho"
+                        [icon]="isAddingToCart ? '' : 'assets/images/cart.svg'"
+                        [disabled]="!product.stock || isAddingToCart"
+                        (clicked)="addToCart()"
+                     ></app-button>
+                  </div>
                </div>
             </div>
          </div>
@@ -166,7 +242,7 @@
       <div class="flex-1">
          <app-button
             class="w-full"
-            [label]="isAddingToCart ? 'Adicionando...' : 'Adicionar'"
+            [label]="isAddingToCart ? '...' : 'Adicionar'"
             [type]="'button'"
             title="Adicionar ao carrinho"
             [icon]="isAddingToCart ? '' : 'assets/images/cart.svg'"
