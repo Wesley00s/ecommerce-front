@@ -56,7 +56,7 @@ export class CategoriesFeature implements OnInit {
 
    private initialFilterState: FilterState = {
       page: 0,
-      size: 12,
+      size: 10,
       name: '',
       sortBy: undefined,
       sortDirection: SortDirection.ASC,
@@ -79,7 +79,49 @@ export class CategoriesFeature implements OnInit {
       this.state$ = this.route.paramMap.pipe(
          tap(() => this.clearFilters(false)),
          switchMap((params) => {
-            const urlCategoryName = params.get('category') || '';
+            const paramCategory = params.get('category');
+            const isAllProducts =
+               !paramCategory || paramCategory.toLowerCase() === 'all';
+            const urlCategoryName = paramCategory || '';
+
+            if (isAllProducts) {
+               return this.filterSubject.pipe(
+                  switchMap((filters) =>
+                     this.productService
+                        .getAllProducts(
+                           filters.sortBy,
+                           filters.sortDirection,
+                           filters.name,
+                           undefined,
+                           filters.page,
+                           filters.size,
+                        )
+                        .pipe(
+                           map((prodResponse) => ({
+                              categoryName: 'Todos os Produtos',
+                              products: prodResponse.data,
+                              pagination: prodResponse.pagination,
+                              loading: false,
+                              error: false,
+                              found: true,
+                           })),
+                        ),
+                  ),
+                  startWith({
+                     categoryName: 'Todos os Produtos',
+                     products: [],
+                     pagination: {
+                        page: 0,
+                        size: 0,
+                        totalElements: 0,
+                        totalPages: 0,
+                     },
+                     loading: true,
+                     error: false,
+                     found: true,
+                  }),
+               );
+            }
 
             return this.categoryService
                .getCategories(0, 1, urlCategoryName)
@@ -159,7 +201,6 @@ export class CategoriesFeature implements OnInit {
          }),
       );
    }
-
    onFilterChange(event: FilterChangeEvent) {
       const current = this.filterSubject.value;
       this.filterSubject.next({
