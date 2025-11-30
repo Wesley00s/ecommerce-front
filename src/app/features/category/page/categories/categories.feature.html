@@ -59,13 +59,11 @@
          @if (state.found) {
             @if (state.products.length > 0) {
                <div
-                  class="flex flex-wrap justify-center md:justify-start gap-6 mb-12 animate-fade-in-up"
+                  class="flex flex-wrap justify-center md:justify-start md:gap-5 animate-fade-in-up delay-100"
                >
                   @for (product of state.products; track product.id) {
-                     <app-product-card
-                        [product]="product"
-                        class="h-full"
-                     ></app-product-card>
+                     <app-product-card [product]="product" class="h-full">
+                     </app-product-card>
                   }
                </div>
 
