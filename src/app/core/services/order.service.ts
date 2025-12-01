@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { OrderShoppingResponse } from '../@types/OrderShoppingResponse';
 import { OrderHistoryResponse } from '../@types/OrderHistoryResponse';
 import { Pagination } from '../@types/Pagination';
+import {CreateOrderRequest} from '../@types/CreateOrderRequest';
 
 @Injectable({
    providedIn: 'root',
@@ -13,8 +14,8 @@ export class OrderService {
    private readonly apiUrl = `${environment.apiUrl}/ecommerce/api/v1/order`;
    private http = inject(HttpClient);
 
-   createOrder(): Observable<OrderShoppingResponse> {
-      return this.http.post<OrderShoppingResponse>(this.apiUrl, {});
+   createOrder(request: CreateOrderRequest): Observable<OrderShoppingResponse> {
+      return this.http.post<OrderShoppingResponse>(this.apiUrl, request);
    }
 
    getOrderHistory(): Observable<OrderHistoryResponse[]> {
