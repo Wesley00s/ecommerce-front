@@ -21,6 +21,7 @@ import { AuthService } from './core/services/auth.service';
 import { lastValueFrom, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { provideAnimations } from '@angular/platform-browser/animations';
+import {provideNgxStripe} from 'ngx-stripe';
 
 const customImageLoader = (config: ImageLoaderConfig) => {
    if (config.src.includes('assets/')) {
@@ -60,6 +61,7 @@ export const appConfig: ApplicationConfig = {
       provideZoneChangeDetection({ eventCoalescing: true }),
       provideRouter(routes),
       CookieService,
+      provideNgxStripe('pk_test_51SZGot3lOUpwZ6q44cXYtBZFES4E1dA7prnPhZxFKWMHd6WptQcY0ZvhE9P2BpuLb86hS7L9c7xul4vgcqft3wjY00BT0uIi49'),
       provideAnimations(),
       provideAppInitializer(() => {
          const authService = inject(AuthService);
