@@ -118,6 +118,7 @@ export class ProductsFeature implements OnInit {
                   undefined,
                   filters.page,
                   filters.size,
+                  true
                )
                .pipe(
                   map((response) => ({
