@@ -33,7 +33,7 @@
                </div>
 
                <div
-                  class="flex flex-wrap justify-center items-stretch gap-4 md:justify-start md:gap-8 animate-fade-in-up"
+                  class="flex flex-wrap justify-center items-stretch gap-4 md:gap-8 animate-fade-in-up"
                >
                   @for (category of catState.categories; track category.label) {
                      <app-category-card
@@ -118,7 +118,7 @@
                   </div>
 
                   <div
-                     class="flex flex-wrap justify-center md:justify-start md:gap-5 animate-fade-in-up delay-100"
+                     class="flex flex-wrap justify-center md:gap-5 animate-fade-in-up delay-100"
                   >
                      @for (product of state.products.data; track product.id) {
                         <app-product-card [product]="product" class="h-full">

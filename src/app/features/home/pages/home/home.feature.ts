@@ -135,6 +135,7 @@ export class HomeFeature implements OnInit {
             undefined,
             this.currentPage,
             this.pageSize,
+            true
          )
          .pipe(
             finalize(() => {
