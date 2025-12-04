@@ -12,6 +12,7 @@ export interface Product {
    rating: number;
    totalReviews: number;
    isAvailable: boolean;
+   deleted: boolean;
    soldCount: number;
    createdAt: string;
 }
