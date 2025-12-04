@@ -1,13 +1,13 @@
-import { inject, Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { Pagination } from '../@types/Pagination';
-import { Product } from '../@types/Product';
-import { SortBy } from '../enum/SortBy';
-import { SortDirection } from '../enum/SortDirection';
-import { environment } from '../../../environment/enviroment';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { CreateProductRequest } from '../@types/CreateProductRequest';
-import { UpdateProductRequest } from '../@types/UpdateProductRequest';
+import {inject, Injectable} from '@angular/core';
+import {BehaviorSubject, map, Observable} from 'rxjs';
+import {Pagination} from '../@types/Pagination';
+import {Product} from '../@types/Product';
+import {SortBy} from '../enum/SortBy';
+import {SortDirection} from '../enum/SortDirection';
+import {environment} from '../../../environment/enviroment';
+import {HttpClient, HttpParams} from '@angular/common/http';
+import {CreateProductRequest} from '../@types/CreateProductRequest';
+import {UpdateProductRequest} from '../@types/UpdateProductRequest';
 
 export interface ProductState {
    loading: boolean;
@@ -41,11 +41,12 @@ export class ProductService {
       categoryId?: number,
       page = 0,
       pageSize = 20,
-   ): Observable<Pagination<Product>> {
+      onlyActive: boolean = false): Observable<Pagination<Product>> {
+
       let params = new HttpParams()
          .set('page', page.toString())
-         .set('pageSize', pageSize.toString());
-
+         .set('pageSize', pageSize.toString())
+         .set('onlyActive', onlyActive.toString());
       if (name) params = params.set('name', name);
       if (sortBy) params = params.set('sortBy', sortBy);
       if (sortDirection) params = params.set('sortDirection', sortDirection);
@@ -57,7 +58,7 @@ export class ProductService {
    }
 
    getProductByCode(code: string): void {
-      this.productStateSubject.next({ ...this.initialState, loading: true });
+      this.productStateSubject.next({...this.initialState, loading: true});
 
       this.http.get<Product>(`${this.apiUrl}/product/code/${code}`).subscribe({
          next: (product) => {
@@ -89,7 +90,7 @@ export class ProductService {
       const formData = new FormData();
       formData.append(
          'data',
-         new Blob([JSON.stringify(data)], { type: 'application/json' }),
+         new Blob([JSON.stringify(data)], {type: 'application/json'}),
       );
       formData.append('coverImage', coverImage);
 
@@ -110,7 +111,7 @@ export class ProductService {
 
       formData.append(
          'productData',
-         new Blob([JSON.stringify(data)], { type: 'application/json' }),
+         new Blob([JSON.stringify(data)], {type: 'application/json'}),
       );
 
       if (newCoverImage) {
