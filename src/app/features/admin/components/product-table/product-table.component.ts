@@ -1,11 +1,11 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Product } from '../../../../core/@types/Product';
-import { CurrencyPipe, NgOptimizedImage } from '@angular/common';
+import {CurrencyPipe, NgClass, NgOptimizedImage} from '@angular/common';
 import { RouterLink } from '@angular/router';
 
 @Component({
    selector: 'app-product-table',
-   imports: [CurrencyPipe, NgOptimizedImage, RouterLink],
+   imports: [CurrencyPipe, NgOptimizedImage, RouterLink, NgClass],
    templateUrl: './product-table.component.html',
    styleUrl: './product-table.component.sass',
 })
