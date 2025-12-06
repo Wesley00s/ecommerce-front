@@ -1,5 +1,5 @@
 import {inject, Injectable} from '@angular/core';
-import {BehaviorSubject, map, Observable} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
 import {Pagination} from '../@types/Pagination';
 import {Product} from '../@types/Product';
 import {SortBy} from '../enum/SortBy';
@@ -41,7 +41,7 @@ export class ProductService {
       categoryId?: number,
       page = 0,
       pageSize = 20,
-      onlyActive: boolean = false): Observable<Pagination<Product>> {
+      onlyActive = false): Observable<Pagination<Product>> {
 
       let params = new HttpParams()
          .set('page', page.toString())
