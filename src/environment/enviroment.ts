@@ -1,4 +1,5 @@
 export const environment = {
-   production: false,
-   apiUrl: 'http://localhost:8000',
+   production: true,
+   // apiUrl: 'http://localhost:8000',
+   apiUrl: 'https://kong-gateway-ie2h.onrender.com',
 };
