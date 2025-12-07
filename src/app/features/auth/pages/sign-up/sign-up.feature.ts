@@ -38,10 +38,26 @@ export class SignUpFeature {
             street: ['', Validators.required],
             city: ['', Validators.required],
             state: ['', Validators.required],
-            zip: ['', Validators.required],
+            zip: ['', [Validators.required, Validators.pattern(/^\d{5}-\d{3}$/)]],
          },
          { validators: passwordMatchValidator },
       );
+   }
+
+   formatZip(event: Event): void {
+      const input = event.target as HTMLInputElement;
+      let value = input.value.replace(/\D/g, '');
+
+      if (value.length > 8) {
+         value = value.substring(0, 8);
+      }
+
+      if (value.length > 5) {
+         value = value.replace(/^(\d{5})(\d)/, '$1-$2');
+      }
+
+      input.value = value;
+      this.signUpForm.get('zip')?.setValue(value, { emitEvent: false });
    }
 
    onSubmit(): void {
@@ -56,6 +72,8 @@ export class SignUpFeature {
 
       const formValue = this.signUpForm.value;
 
+      const cleanZip = formValue.zip.replace(/\D/g, '');
+
       const newUser: User = {
          name: formValue.name,
          email: formValue.email,
@@ -64,7 +82,7 @@ export class SignUpFeature {
          street: formValue.street,
          city: formValue.city,
          state: formValue.state,
-         zip: formValue.zip,
+         zip: cleanZip,
       };
 
       this.authService
