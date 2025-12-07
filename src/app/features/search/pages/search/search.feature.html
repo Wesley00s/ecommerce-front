@@ -49,9 +49,9 @@
       </div>
 
       @if (state.loading) {
-         <app-loading-container
-            message="Buscando produtos..."
-         ></app-loading-container>
+         <app-loading-spinner
+            [message]="'Buscando produtos...'"
+         ></app-loading-spinner>
       }
 
       @if (!state.loading && !state.error) {

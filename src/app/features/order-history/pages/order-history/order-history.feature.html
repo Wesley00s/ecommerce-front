@@ -166,9 +166,9 @@
             </div>
          }
       } @else {
-         <app-loading-container
-            message="Carregando histórico..."
-         ></app-loading-container>
+         <app-loading-spinner
+            [message]="'Carregando histórico...'"
+         ></app-loading-spinner>
       }
    </div>
 </div>

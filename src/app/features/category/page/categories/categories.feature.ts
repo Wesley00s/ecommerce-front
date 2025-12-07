@@ -18,13 +18,13 @@ import { CategoryService } from '../../../../core/services/category.service';
 import { Product } from '../../../../core/@types/Product';
 import { Pagination } from '../../../../core/@types/Pagination';
 import { ProductCardComponent } from '../../../../shared/components/product-card/product-card.component';
-import { LoadingContainerComponent } from '../../../../shared/components/loading-container/loading-container.component';
 import { SortBy } from '../../../../core/enum/SortBy';
 import { SortDirection } from '../../../../core/enum/SortDirection';
 import {
    FilterBarComponent,
    FilterChangeEvent,
 } from '../../../../shared/components/filter-bar/filter-bar.component';
+import { LoadingSpinnerComponent } from '../../../../shared/components/loading-spinner/loading-spinner.component';
 
 interface FilterState {
    page: number;
@@ -39,10 +39,10 @@ interface FilterState {
    imports: [
       ProductCardComponent,
       AsyncPipe,
-      LoadingContainerComponent,
       RouterLink,
       ReactiveFormsModule,
       FilterBarComponent,
+      LoadingSpinnerComponent,
    ],
    templateUrl: './categories.feature.html',
    styleUrl: './categories.feature.sass',

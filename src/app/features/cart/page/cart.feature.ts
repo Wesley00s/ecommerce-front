@@ -4,12 +4,12 @@ import { Router, RouterLink } from '@angular/router';
 import { ButtonComponent } from '../../../shared/components/button/button.component';
 import { AsyncPipe, CurrencyPipe } from '@angular/common';
 import { CartItemComponent } from '../components/cart-item/cart-item.component';
-import { LoadingContainerComponent } from '../../../shared/components/loading-container/loading-container.component';
 import { AlertModalComponent } from '../../../shared/components/alert-modal/alert-modal/alert-modal.component';
 import { CartService } from '../../../core/services/cart.service';
 import { Cart } from '../../../core/@types/Cart';
 import { ToastService } from '../../../core/services/toast.service';
 import { CartItem } from '../../../core/@types/CartItem';
+import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 
 @Component({
    selector: 'app-cart-page',
@@ -19,8 +19,8 @@ import { CartItem } from '../../../core/@types/CartItem';
       CurrencyPipe,
       CartItemComponent,
       AsyncPipe,
-      LoadingContainerComponent,
       AlertModalComponent,
+      LoadingSpinnerComponent,
    ],
    templateUrl: './cart.feature.html',
    styleUrl: './cart.feature.sass',

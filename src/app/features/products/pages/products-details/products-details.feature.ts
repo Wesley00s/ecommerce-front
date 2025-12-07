@@ -9,7 +9,7 @@ import {
 import { Observable } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { InfoContainerComponent } from '../../../../shared/components/info-container/info-container.component';
-import { LoadingContainerComponent } from '../../../../shared/components/loading-container/loading-container.component';
+import { LoadingSpinnerComponent } from '../../../../shared/components/loading-spinner/loading-spinner.component';
 
 @Component({
    selector: 'app-products-details',
@@ -18,7 +18,7 @@ import { LoadingContainerComponent } from '../../../../shared/components/loading
       ReviewsComponent,
       AsyncPipe,
       InfoContainerComponent,
-      LoadingContainerComponent,
+      LoadingSpinnerComponent,
    ],
    templateUrl: './products-details.feature.html',
    styleUrl: './products-details.feature.sass',

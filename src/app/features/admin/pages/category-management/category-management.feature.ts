@@ -33,6 +33,7 @@ import { CategoryService } from '../../../../core/services/category.service';
 import { CategoryTableComponent } from '../../components/category-table/category-table.component';
 import { ToastService } from '../../../../core/services/toast.service';
 import { AlertModalComponent } from '../../../../shared/components/alert-modal/alert-modal/alert-modal.component';
+import { LoadingSpinnerComponent } from '../../../../shared/components/loading-spinner/loading-spinner.component';
 
 @Component({
    selector: 'app-category-management',
@@ -41,6 +42,7 @@ import { AlertModalComponent } from '../../../../shared/components/alert-modal/a
       ReactiveFormsModule,
       CategoryTableComponent,
       AlertModalComponent,
+      LoadingSpinnerComponent,
    ],
    templateUrl: './category-management.feature.html',
    styleUrl: './category-management.feature.sass',

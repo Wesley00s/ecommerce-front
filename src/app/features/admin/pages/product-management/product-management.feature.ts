@@ -36,6 +36,7 @@ import {
 } from '../../../../shared/components/filter-bar/filter-bar.component';
 import { ToastService } from '../../../../core/services/toast.service';
 import { AlertModalComponent } from '../../../../shared/components/alert-modal/alert-modal/alert-modal.component';
+import { LoadingSpinnerComponent } from '../../../../shared/components/loading-spinner/loading-spinner.component';
 
 const MAX_SIZE = 10 * 1024 * 1024;
 
@@ -56,6 +57,7 @@ interface ProductFilterState {
       FilterBarComponent,
       NgClass,
       AlertModalComponent,
+      LoadingSpinnerComponent,
    ],
    templateUrl: './product-management.feature.html',
    styleUrl: './product-management.feature.sass',

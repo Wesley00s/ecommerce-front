@@ -2,7 +2,6 @@ import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { AsyncPipe, NgOptimizedImage } from '@angular/common';
 import {
    catchError,
-   debounceTime,
    filter,
    map,
    Observable,
@@ -28,7 +27,6 @@ import { CreateComment } from '../../../../core/@types/CreateComment';
 
 import { ReviewCardComponent } from '../review-card/review-card.component';
 import { ErrorContainerComponent } from '../../../../shared/components/error-container/error-container.component';
-import { LoadingContainerComponent } from '../../../../shared/components/loading-container/loading-container.component';
 import { CreateReviewButtonComponent } from '../../../../shared/components/create-review-button/create-review-button.component';
 import {
    CreateReviewModalComponent,
@@ -37,6 +35,7 @@ import {
 import { AlertModalComponent } from '../../../../shared/components/alert-modal/alert-modal/alert-modal.component';
 import { CommentReactionPayload } from '../../../../core/@types/EventsPayload/CommentReactionPayload';
 import { ToastService } from '../../../../core/services/toast.service';
+import { LoadingSpinnerComponent } from '../../../../shared/components/loading-spinner/loading-spinner.component';
 
 export interface CommentState {
    comments: Comment[];
@@ -47,17 +46,24 @@ export interface CommentState {
    hasMore: boolean;
 }
 
+interface ReactionSnapshot {
+   likes: number;
+   dislikes: number;
+   likedByMe: boolean;
+   dislikedByMe: boolean;
+}
+
 @Component({
    selector: 'app-reviews',
    imports: [
       ReviewCardComponent,
       AsyncPipe,
       ErrorContainerComponent,
-      LoadingContainerComponent,
       CreateReviewButtonComponent,
       NgOptimizedImage,
       CreateReviewModalComponent,
       AlertModalComponent,
+      LoadingSpinnerComponent,
    ],
    templateUrl: './reviews.component.html',
    styleUrl: './reviews.component.sass',
@@ -132,8 +138,14 @@ export class ReviewsComponent implements OnInit, OnDestroy {
       this.subscriptions.add(
          this.reactionAction
             .pipe(
-               debounceTime(300),
                switchMap(({ reviewId, commentId, isLike }) => {
+                  const backupState = this.snapshotReactionState(
+                     reviewId,
+                     commentId,
+                  );
+
+                  this.updateLocalReactionState(reviewId, commentId, isLike);
+
                   const reaction$ = commentId
                      ? this.reviewsService.reactToComment(
                           reviewId,
@@ -143,14 +155,15 @@ export class ReviewsComponent implements OnInit, OnDestroy {
                      : this.reviewsService.reactToReview(reviewId, isLike);
 
                   return reaction$.pipe(
-                     tap(() => {
-                        if (commentId) {
-                           this.reloadCommentsForReview(reviewId);
-                        } else {
-                           this.fetchReviews();
-                        }
-                     }),
                      catchError(() => {
+                        this.restoreReactionState(
+                           reviewId,
+                           commentId,
+                           backupState,
+                        );
+                        this.toastService.showError(
+                           'Não foi possível registrar sua reação.',
+                        );
                         return of(null);
                      }),
                   );
@@ -158,6 +171,95 @@ export class ReviewsComponent implements OnInit, OnDestroy {
             )
             .subscribe(),
       );
+   }
+
+   private updateLocalReactionState(
+      reviewId: string,
+      commentId: string | undefined | null,
+      isLikeAction: boolean,
+   ): void {
+      const target = this.findTargetItem(reviewId, commentId);
+      if (!target) return;
+
+      if (isLikeAction) {
+         if (target.likedByMe) {
+            target.likedByMe = false;
+            target.likes--;
+         } else {
+            target.likedByMe = true;
+            target.likes++;
+
+            if (target.dislikedByMe) {
+               target.dislikedByMe = false;
+               target.dislikes--;
+            }
+         }
+      } else {
+         if (target.dislikedByMe) {
+            target.dislikedByMe = false;
+            target.dislikes--;
+         } else {
+            target.dislikedByMe = true;
+            target.dislikes++;
+
+            if (target.likedByMe) {
+               target.likedByMe = false;
+               target.likes--;
+            }
+         }
+      }
+   }
+
+   private findTargetItem(
+      reviewId: string,
+      commentId?: string | null,
+   ): ReactionSnapshot | null {
+      const review = this.reviewsService.currentState.reviews.data.find(
+         (r) => r.reviewId === reviewId,
+      );
+
+      if (!review) return null;
+
+      if (commentId) {
+         const commentState = this.commentsMap.get(reviewId);
+         return (
+            commentState?.comments.find((c) => c.commentId === commentId) ||
+            null
+         );
+      }
+
+      return review;
+   }
+
+   private snapshotReactionState(
+      reviewId: string,
+      commentId?: string | null,
+   ): ReactionSnapshot | null {
+      const item = this.findTargetItem(reviewId, commentId);
+      if (!item) return null;
+
+      return {
+         likes: item.likes,
+         dislikes: item.dislikes,
+         likedByMe: item.likedByMe,
+         dislikedByMe: item.dislikedByMe,
+      };
+   }
+
+   private restoreReactionState(
+      reviewId: string,
+      commentId: string | undefined | null,
+      snapshot: ReactionSnapshot | null,
+   ): void {
+      if (!snapshot) return;
+      const item = this.findTargetItem(reviewId, commentId);
+
+      if (item) {
+         item.likes = snapshot.likes;
+         item.dislikes = snapshot.dislikes;
+         item.likedByMe = snapshot.likedByMe;
+         item.dislikedByMe = snapshot.dislikedByMe;
+      }
    }
 
    handleShowLessComments(review: Review): void {

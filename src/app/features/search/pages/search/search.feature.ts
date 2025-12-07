@@ -17,8 +17,8 @@ import {
 import { Product } from '../../../../core/@types/Product';
 import { Pagination } from '../../../../core/@types/Pagination';
 import { AsyncPipe } from '@angular/common';
-import { LoadingContainerComponent } from '../../../../shared/components/loading-container/loading-container.component';
 import { ProductCardComponent } from '../../../../shared/components/product-card/product-card.component';
+import { LoadingSpinnerComponent } from '../../../../shared/components/loading-spinner/loading-spinner.component';
 
 interface SearchState {
    query: string;
@@ -34,8 +34,8 @@ interface SearchState {
       AsyncPipe,
       RouterLink,
       ReactiveFormsModule,
-      LoadingContainerComponent,
       ProductCardComponent,
+      LoadingSpinnerComponent,
    ],
    templateUrl: './search.feature.html',
    styleUrl: './search.feature.sass',

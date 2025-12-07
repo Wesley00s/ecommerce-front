@@ -2,7 +2,6 @@ import { Component, inject, OnInit } from '@angular/core';
 import { HeaderComponent } from '../../components/header/header.component';
 import { CategoryCardComponent } from '../../../../shared/components/category-card/category-card.component';
 import { Product } from '../../../../core/@types/Product';
-import { ProductCardComponent } from '../../../../shared/components/product-card/product-card.component';
 import { ProductService } from '../../../../core/services/product.service';
 import {
    catchError,
@@ -15,10 +14,8 @@ import {
 } from 'rxjs';
 import { Pagination } from '../../../../core/@types/Pagination';
 import { AsyncPipe } from '@angular/common';
-import { LoadingContainerComponent } from '../../../../shared/components/loading-container/loading-container.component';
-import { ErrorContainerComponent } from '../../../../shared/components/error-container/error-container.component';
 import { CategoryService } from '../../../../core/services/category.service';
-import { RouterLink } from '@angular/router';
+import { ProductSectionComponent } from '../../../products/components/product-section/product-section.component';
 
 interface CategoryCardData {
    image: string;
@@ -27,13 +24,26 @@ interface CategoryCardData {
    link: string;
 }
 
-interface ProductState {
+interface SectionState {
    loading: boolean;
    loadingMore: boolean;
    products: Pagination<Product>;
+   currentPage: number;
    error: boolean;
    errorMessage: string;
 }
+
+const INITIAL_SECTION_STATE: SectionState = {
+   loading: true,
+   loadingMore: false,
+   products: {
+      data: [],
+      pagination: { page: 0, size: 0, totalElements: 0, totalPages: 0 },
+   },
+   currentPage: 0,
+   error: false,
+   errorMessage: '',
+};
 
 @Component({
    selector: 'app-home-page',
@@ -41,10 +51,7 @@ interface ProductState {
       HeaderComponent,
       CategoryCardComponent,
       AsyncPipe,
-      LoadingContainerComponent,
-      ErrorContainerComponent,
-      ProductCardComponent,
-      RouterLink,
+      ProductSectionComponent,
    ],
    templateUrl: './home.feature.html',
    styleUrl: './home.feature.sass',
@@ -53,20 +60,14 @@ export class HomeFeature implements OnInit {
    private productService = inject(ProductService);
    private categoryService = inject(CategoryService);
 
-   private currentPage = 0;
    private readonly pageSize = 8;
 
-   private readonly initialProductState: Pagination<Product> = {
-      data: [],
-      pagination: { page: 0, size: 0, totalElements: 0, totalPages: 0 },
-   };
+   featuredState$ = new BehaviorSubject<SectionState>({
+      ...INITIAL_SECTION_STATE,
+   });
 
-   productsState$ = new BehaviorSubject<ProductState>({
-      loading: true,
-      loadingMore: false,
-      products: this.initialProductState,
-      error: false,
-      errorMessage: '',
+   topRatedState$ = new BehaviorSubject<SectionState>({
+      ...INITIAL_SECTION_STATE,
    });
 
    categoriesState$!: Observable<{
@@ -77,7 +78,8 @@ export class HomeFeature implements OnInit {
    }>;
 
    ngOnInit() {
-      this.loadProducts();
+      this.loadFeaturedProducts();
+      this.loadTopRatedProducts();
       this.loadCategories();
    }
 
@@ -117,14 +119,9 @@ export class HomeFeature implements OnInit {
       );
    }
 
-   loadProducts(isLoadMore = false) {
-      const currentState = this.productsState$.value;
-
-      if (isLoadMore) {
-         this.productsState$.next({ ...currentState, loadingMore: true });
-      } else {
-         this.productsState$.next({ ...currentState, loading: true });
-      }
+   loadFeaturedProducts(isLoadMore = false) {
+      const currentState = this.featuredState$.value;
+      this.updateLoadingState(this.featuredState$, currentState, isLoadMore);
 
       this.productService
          .getAllProducts(
@@ -132,55 +129,93 @@ export class HomeFeature implements OnInit {
             undefined,
             undefined,
             undefined,
-            this.currentPage,
+            currentState.currentPage,
             this.pageSize,
             true,
          )
-         .pipe(
-            finalize(() => {
-               const current = this.productsState$.value;
-               this.productsState$.next({
-                  ...current,
-                  loading: false,
-                  loadingMore: false,
-               });
-            }),
-         )
-         .subscribe({
-            next: (response) => {
-               const currentData = isLoadMore ? currentState.products.data : [];
-               const newData = [...currentData, ...response.data];
-
-               this.productsState$.next({
-                  loading: false,
-                  loadingMore: false,
-                  products: {
-                     ...response,
-                     data: newData,
-                  },
-                  error: false,
-                  errorMessage: '',
-               });
-            },
-            error: (err) => {
-               this.productsState$.next({
-                  ...currentState,
-                  loading: false,
-                  loadingMore: false,
-                  error: true,
-                  errorMessage: err.message || 'Erro ao carregar produtos',
-               });
-            },
-         });
+         .pipe(finalize(() => this.finalizeLoading(this.featuredState$)))
+         .subscribe(
+            this.createObserver(this.featuredState$, currentState, isLoadMore),
+         );
    }
 
-   loadMoreProducts() {
-      const currentState = this.productsState$.value;
-      const totalPages = currentState.products.pagination.totalPages;
+   loadMoreFeatured() {
+      const state = this.featuredState$.value;
+      if (state.currentPage < state.products.pagination.totalPages - 1) {
+         this.featuredState$.next({
+            ...state,
+            currentPage: state.currentPage + 1,
+         });
+         this.loadFeaturedProducts(true);
+      }
+   }
 
-      if (this.currentPage < totalPages - 1) {
-         this.currentPage++;
-         this.loadProducts(true);
+   loadTopRatedProducts(isLoadMore = false) {
+      const currentState = this.topRatedState$.value;
+      this.updateLoadingState(this.topRatedState$, currentState, isLoadMore);
+      this.productService
+         .getTopRatedProducts(this.pageSize)
+         .pipe(finalize(() => this.finalizeLoading(this.topRatedState$)))
+         .subscribe(
+            this.createObserver(this.topRatedState$, currentState, isLoadMore),
+         );
+   }
+
+   private updateLoadingState(
+      subject: BehaviorSubject<SectionState>,
+      currentState: SectionState,
+      isLoadMore: boolean,
+   ) {
+      if (isLoadMore) {
+         subject.next({ ...currentState, loadingMore: true });
+      } else {
+         subject.next({ ...currentState, loading: true });
+      }
+   }
+
+   private finalizeLoading(subject: BehaviorSubject<SectionState>) {
+      const current = subject.value;
+      subject.next({ ...current, loading: false, loadingMore: false });
+   }
+
+   private createObserver(
+      subject: BehaviorSubject<SectionState>,
+      currentState: SectionState,
+      isLoadMore: boolean,
+   ) {
+      return {
+         next: (response: Pagination<Product>) => {
+            const currentData = isLoadMore ? currentState.products.data : [];
+            const newData = [...currentData, ...response.data];
+            subject.next({
+               ...subject.value,
+               products: { ...response, data: newData },
+               error: false,
+               errorMessage: '',
+               loading: false,
+               loadingMore: false,
+            });
+         },
+         error: (err: { message: string }) => {
+            subject.next({
+               ...subject.value,
+               error: true,
+               errorMessage: err.message || 'Erro ao carregar produtos',
+               loading: false,
+               loadingMore: false,
+            });
+         },
+      };
+   }
+
+   loadMoreTopRated() {
+      const state = this.topRatedState$.value;
+      if (state.currentPage < state.products.pagination.totalPages - 1) {
+         this.topRatedState$.next({
+            ...state,
+            currentPage: state.currentPage + 1,
+         });
+         this.loadTopRatedProducts(true);
       }
    }
 

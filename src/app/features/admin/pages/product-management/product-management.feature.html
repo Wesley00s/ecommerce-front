@@ -433,13 +433,16 @@
          </app-filter-bar>
       </div>
 
-      @if (!state.loading) {
+      @if (state.loading) {
+         <app-loading-spinner></app-loading-spinner>
+      } @else {
          <app-product-table
             [products]="state.products.data"
             (edit)="onEdit($event)"
             (delete)="onDelete($event!)"
          ></app-product-table>
       }
+
       @if (state.products.pagination.totalPages > 1) {
          <div
             class="flex flex-col sm:flex-row justify-between items-center mt-4 gap-3"

@@ -13,19 +13,19 @@ import {
 import { Pagination } from '../../../../core/@types/Pagination';
 import { OrderShoppingResponse } from '../../../../core/@types/OrderShoppingResponse';
 import { AsyncPipe } from '@angular/common';
-import { LoadingContainerComponent } from '../../../../shared/components/loading-container/loading-container.component';
 import { OrderTableComponent } from '../../components/order-table/order-table.component';
 import { AlertModalComponent } from '../../../../shared/components/alert-modal/alert-modal/alert-modal.component';
 import { OrderDetailsModalComponent } from '../../components/order-details-modal/order-details-modal.component';
+import { LoadingSpinnerComponent } from '../../../../shared/components/loading-spinner/loading-spinner.component';
 
 @Component({
    selector: 'app-order-management',
    imports: [
       AsyncPipe,
-      LoadingContainerComponent,
       OrderTableComponent,
       AlertModalComponent,
       OrderDetailsModalComponent,
+      LoadingSpinnerComponent,
    ],
    templateUrl: './order-management.feature.html',
    styleUrl: './order-management.feature.sass',

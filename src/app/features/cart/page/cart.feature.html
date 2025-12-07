@@ -5,9 +5,7 @@
       </h1>
 
       @if (loading) {
-         <app-loading-container
-            message="Carregando carrinho..."
-         ></app-loading-container>
+         <app-loading-spinner></app-loading-spinner>
       } @else {
          @if (cart$ | async; as cart) {
             @if (cart.items.length > 0) {

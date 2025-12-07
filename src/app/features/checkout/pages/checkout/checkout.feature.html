@@ -234,9 +234,7 @@
                                     {{ item.price | currency: "BRL" }}
                                  </p>
                                  <p class="text-xs text-gray-400">
-                                    {{
-                                       item.product.price | currency: "BRL"
-                                    }}
+                                    {{ item.product.price | currency: "BRL" }}
                                     un.
                                  </p>
                               </div>
@@ -296,9 +294,7 @@
             </div>
          </div>
       } @else {
-         <app-loading-container
-            message="Preparando checkout..."
-         ></app-loading-container>
+         <app-loading-spinner></app-loading-spinner>
       }
    </div>
 </div>

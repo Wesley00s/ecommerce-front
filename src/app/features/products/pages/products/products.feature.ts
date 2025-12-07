@@ -17,11 +17,11 @@ import { Product } from '../../../../core/@types/Product';
 import { Pagination } from '../../../../core/@types/Pagination';
 import { AsyncPipe } from '@angular/common';
 import { ProductCardComponent } from '../../../../shared/components/product-card/product-card.component';
-import { LoadingContainerComponent } from '../../../../shared/components/loading-container/loading-container.component';
 import {
    FilterBarComponent,
    FilterChangeEvent,
 } from '../../../../shared/components/filter-bar/filter-bar.component';
+import { LoadingSpinnerComponent } from '../../../../shared/components/loading-spinner/loading-spinner.component';
 
 interface FilterState {
    page: number;
@@ -38,8 +38,8 @@ interface FilterState {
       RouterLink,
       ReactiveFormsModule,
       ProductCardComponent,
-      LoadingContainerComponent,
       FilterBarComponent,
+      LoadingSpinnerComponent,
    ],
    templateUrl: './products.feature.html',
    styleUrl: './products.feature.sass',

@@ -10,7 +10,6 @@ import { User } from '../../../../core/@types/User';
 import { AsyncPipe, CurrencyPipe, NgOptimizedImage } from '@angular/common';
 import { ToRelativePathPipe } from '../../../../shared/pipes/to-relative-path.pipe';
 import { ButtonComponent } from '../../../../shared/components/button/button.component';
-import { LoadingContainerComponent } from '../../../../shared/components/loading-container/loading-container.component';
 import { StripeCardComponent, StripeService } from 'ngx-stripe';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
@@ -19,6 +18,7 @@ import {
 } from '@stripe/stripe-js';
 import { CreateOrderRequest } from '../../../../core/@types/CreateOrderRequest';
 import { PaymentType } from '../../../../core/enum/PaymentType';
+import { LoadingSpinnerComponent } from '../../../../shared/components/loading-spinner/loading-spinner.component';
 
 @Component({
    selector: 'app-checkout',
@@ -29,9 +29,9 @@ import { PaymentType } from '../../../../core/enum/PaymentType';
       CurrencyPipe,
       ButtonComponent,
       NgOptimizedImage,
-      LoadingContainerComponent,
       StripeCardComponent,
       ReactiveFormsModule,
+      LoadingSpinnerComponent,
    ],
    templateUrl: './checkout.feature.html',
    styleUrl: './checkout.feature.sass',

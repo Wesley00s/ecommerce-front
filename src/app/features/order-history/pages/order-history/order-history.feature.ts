@@ -11,7 +11,7 @@ import {
    NgOptimizedImage,
 } from '@angular/common';
 import { ToRelativePathPipe } from '../../../../shared/pipes/to-relative-path.pipe';
-import { LoadingContainerComponent } from '../../../../shared/components/loading-container/loading-container.component';
+import { LoadingSpinnerComponent } from '../../../../shared/components/loading-spinner/loading-spinner.component';
 
 @Component({
    selector: 'app-order-history',
@@ -23,7 +23,7 @@ import { LoadingContainerComponent } from '../../../../shared/components/loading
       ToRelativePathPipe,
       NgOptimizedImage,
       NgClass,
-      LoadingContainerComponent,
+      LoadingSpinnerComponent,
    ],
    templateUrl: './order-history.feature.html',
    styleUrl: './order-history.feature.sass',

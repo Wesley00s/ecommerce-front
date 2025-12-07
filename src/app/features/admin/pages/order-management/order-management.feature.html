@@ -14,9 +14,7 @@
       }
 
       @if (state.loading) {
-         <app-loading-container
-            message="Carregando pedidos..."
-         ></app-loading-container>
+         <app-loading-spinner></app-loading-spinner>
       } @else {
          <app-order-table
             [orders]="state.orders.data"
