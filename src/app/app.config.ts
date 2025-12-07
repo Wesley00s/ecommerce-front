@@ -6,7 +6,7 @@ import {
    Provider,
    provideZoneChangeDetection,
 } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withInMemoryScrolling } from '@angular/router';
 
 import { routes } from './app.routes';
 import { CookieService } from 'ngx-cookie-service';
@@ -59,7 +59,13 @@ export const appConfig: ApplicationConfig = {
       customImageLoaderProvider,
       provideBrowserGlobalErrorListeners(),
       provideZoneChangeDetection({ eventCoalescing: true }),
-      provideRouter(routes),
+      provideRouter(
+         routes,
+         withInMemoryScrolling({
+            scrollPositionRestoration: 'enabled',
+            anchorScrolling: 'enabled',
+         }),
+      ),
       CookieService,
       provideNgxStripe(
          'pk_test_51SZGot3lOUpwZ6q44cXYtBZFES4E1dA7prnPhZxFKWMHd6WptQcY0ZvhE9P2BpuLb86hS7L9c7xul4vgcqft3wjY00BT0uIi49',
