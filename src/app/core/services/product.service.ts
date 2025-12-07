@@ -57,6 +57,19 @@ export class ProductService {
       });
    }
 
+   getTopRatedProducts(limit = 20): Observable<Pagination<Product>> {
+      const params = new HttpParams()
+         .set('page', '0')
+         .set('pageSize', limit.toString())
+         .set('sortBy', SortBy.RATING)
+         .set('sortDirection', SortDirection.DESC)
+         .set('onlyActive', 'true');
+
+      return this.http.get<Pagination<Product>>(`${this.apiUrl}/product`, {
+         params,
+      });
+   }
+
    getProductByCode(code: string): void {
       this.productStateSubject.next({ ...this.initialState, loading: true });
 
