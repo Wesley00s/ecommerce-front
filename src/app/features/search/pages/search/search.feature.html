@@ -57,7 +57,7 @@
       @if (!state.loading && !state.error) {
          @if (state.products.length > 0) {
             <div
-               class="container flex flex-row flex-wrap justify-center items-center mb-24 md:gap-5"
+               class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-0 sm:gap-6"
             >
                @for (product of state.products; track product.id) {
                   <app-product-card [product]="product"></app-product-card>
